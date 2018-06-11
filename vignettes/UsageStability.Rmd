@@ -1,0 +1,37 @@
+---
+title: "Finding stable components of dimensionality reduction"
+author: "Hannah Meyer"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+
+# 1. Simulate Data
+
+```{r data simulation}
+Y <- PhenotypeSimulator::runSimulation(N = 1000, P = 50,  tNrSNP = 10000, 
+                           SNPfrequencies = c(0.05, 0.1,0.3,0.4), genVar = 0.4,
+                           h2s=0.05, h2bg = 0.95, phi = 0.6,
+                           delta=0.4)
+
+```
+
+# 2. Run dimensionality reduction
+
+```{r dimensionality reduction}
+dr <- computeDimReduction(Y=Y, method=c("PCA", "LLE", "ICA", "LaplacianEigenmap", 
+                                  verbose=TRUE)
+```
+
