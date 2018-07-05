@@ -1,5 +1,8 @@
 #' Estimate stability
 #' 
+#' Takes the output of \code{\link{subsetDimReduction}} and finds
+#' the stable low-dimension components across dimensionality reduced
+#' subsets of the original data. 
 #' @param dr [list]
 #' @param threshold [double]
 #' @param verbose [logical] If set, progress messages are printed to standard 
@@ -8,7 +11,6 @@
 #' @export
 estimateStability <- function(dr, threshold, verbose=FALSE) {
     comparison  <- resultsComparison(dr, verbose=verbose)
-    names(comparison) <- names(dr)
     formated <- formatComparison(comparison)
     maxcor <- formated$maxcor
     rownames(maxcor) <- unlist(sapply(1:(length(comparison)-1), function(i) {
@@ -17,14 +19,16 @@ estimateStability <- function(dr, threshold, verbose=FALSE) {
         }, i=i)
     }))
     maxcor_long <- reshape2::melt(maxcor)
-    colnames(maxcor_long) <- c("comparison", "component", "value")
-    medians_maxcor <- stats::aggregate(abs(value) ~ component, maxcor_long,
+    colnames(maxcor_long) <- c("comparison", "component", "correlation")
+    medians_maxcor <- stats::aggregate(abs(correlation) ~ component, maxcor_long,
                                        median)
     colnames(medians_maxcor)[2] <- "abs_correlation" 
     medians_maxcor$threshold <- 
         sapply(medians_maxcor$abs_correlation, function(m) {
             # index of last TRUE
-            threshold[length(which(sapply(threshold, function(thr) m >= thr )))]
+            iT <- length(which(m >= threshold))
+            if (iT == 0) return(paste("<", min(threshold),sep=""))
+            if (iT != 0) return(threshold[iT])
         })
     maxcor_long$threshold <- sapply(maxcor_long$component, function(s) {
         medians_maxcor$threshold[medians_maxcor$component %in% s]
@@ -34,11 +38,12 @@ estimateStability <- function(dr, threshold, verbose=FALSE) {
     colnames(pass) <- threshold
     rownames(pass) <- rownames(maxcor)
     pass_long <- reshape2::melt(pass)
-    colnames(pass_long) <- c("comparison", "threshold","value")
-    medians_pass <- stats::aggregate(value ~ threshold, pass_long, median)
+    colnames(pass_long) <- c("comparison", "threshold","componentsPass")
+    medians_pass <- stats::aggregate(componentsPass ~ threshold, pass_long, 
+                                     median)
     return(list(comparison=comparison, maxcor=maxcor, maxcor_long=maxcor_long, 
                 medians_maxcor=medians_maxcor, pass=pass, pass_long=pass_long, 
-                medians_pass=medians_pass, p_maxcor=p_maxcor, p_pass=p_pass ))
+                medians_pass=medians_pass))
 }
 
 #' Apply compareSetup and format results
@@ -53,12 +58,15 @@ estimateStability <- function(dr, threshold, verbose=FALSE) {
 #' (componentxcomponent_r) and the reordered column-wise correlation
 #' coefficients (componentxcomponent_r_reordered)
 resultsComparison <- function(data_list, verbose=FALSE) {
-    lapply(seq_along(data_list), function(perm1) {
+    if (is.null(names(data_list))) {
+        names(data_list) <- paste("cv", 1:length(data_list), sep="")
+    }
+    tmp <- lapply(seq_along(data_list), function(perm1) {
         tmp <- lapply(seq_along(data_list), function(perm2, perm1) {
             if (perm1 <  perm2) {
                 vmessage(c("Comparing list element", perm1, "with element", 
                            perm2), verbose=verbose)
-                compareSets(data_list[[perm2]], data_list[[perm1]])
+                compareSets(data_list[[perm2]]$Yred, data_list[[perm1]]$Yred)
             }
         }, perm1=perm1)
         names(tmp) <- names(data_list)
@@ -78,6 +86,8 @@ resultsComparison <- function(data_list, verbose=FALSE) {
                     componentxcomponent_r_reordered=
                         componentxcomponent_r_reordered))
     })
+    names(tmp) <- paste("cv", 1:length(data_list), sep="")
+    return(tmp)
 }
 
 #' Compare dimensionality reduction across subsets
@@ -91,7 +101,7 @@ resultsComparison <- function(data_list, verbose=FALSE) {
 #' @return named list
 compareSets <- function(set1, set2, verbose=FALSE) {
     common_subset <- findIntersect(set1, set2)
-    size_subset <- dim(common_subset[[1]])[2]
+    size_subset <- dim(common_subset[[1]])[1]
     componentxcomponent <- correlateSets(common_subset[[1]], 
                                          common_subset[[2]])
     componentxcomponent_r <- sapply(componentxcomponent, function(fac) fac$r)
@@ -110,7 +120,7 @@ compareSets <- function(set1, set2, verbose=FALSE) {
 #' Format the comparison results
 #' 
 #' Extract relevant data and remove null-entries
-#' @param comparison_list output [list] from resulsComparison containing with 
+#' @param comparison_list output [list] from resultsComparison with 
 #' the size of the overlapping samples between samples sets (size), the
 #' reordered correlation coefficients (reorder), the maximum correlation
 #' (maxcor), the original column-wise correlation coefficients 
@@ -136,7 +146,7 @@ formatComparison <- function(comparison_list) {
         return(perm$componentxcomponent_r_reordered))[-length(comparison_list)]
     
     # rm all nulls
-    maxcor <- do.call(rbind, sapply(sapply(maxcor,rmnulls), function(l) 
+    maxcor <- do.call(rbind, sapply(sapply(maxcor, rmnulls), function(l) 
         do.call(rbind,l)))
     reorder <- lapply(reorder, rmnulls)
     componentxcomponent_r <- lapply(componentxcomponent_r, rmnulls)
@@ -158,9 +168,9 @@ formatComparison <- function(comparison_list) {
 #' @return list with set1 and set2 filtered for overlapping samples and ordered
 #' to the order of set1
 findIntersect <- function(set1, set2) {
-	set2 <- set2[,which(colnames(set2) %in% colnames(set1))]
-	set1 <- set1[,which(colnames(set1) %in% colnames(set2))]
-	set2 <- set2[,match(colnames(set1),colnames(set2))]
+	set2 <- set2[which(rownames(set2) %in% rownames(set1)),]
+	set1 <- set1[which(rownames(set1) %in% rownames(set2)),]
+	set2 <- set2[match(rownames(set1),rownames(set2)),]
  	return(list(set1, set2))
 }
 
@@ -174,8 +184,8 @@ findIntersect <- function(set1, set2) {
 #' @return named list with correlation coefficient (r) and p-value of 
 #' correlation (p) for each column-column correlation
 correlateSets <- function(set1, set2, type="spearman") {
-	apply(set1, 1, function(fac1) {
-		facxfac <- apply(set2, 1, function(fac2, fac1) {
+	apply(set1, 2, function(fac1) {
+		facxfac <- apply(set2, 2, function(fac2, fac1) {
 			tmp <- Hmisc::rcorr(cbind(fac2, fac1), type=type)
 			return(list(r=tmp$r[1,2], p=tmp$P[1,2]))
 		}, fac1=fac1)
@@ -204,7 +214,7 @@ analyseCorrelation <- function(mat, verbose=FALSE) {
 	while(!sum(diag(mat)) == 0)  {
 		highest_diag_index_memory=c()
 		for (i in 1: nrow(mat)){
-            vmessage(c("Iteration:", iteration, "i:", i, "\n"))
+            vmessage(c("Iteration:", iteration, "i:", i, "\n"), verbose=FALSE)
 			# Find the diagonal element with the highest correlation
             if (i == 1) {
 				index_max_diag <- which.max(abs(diag(mat))) 
