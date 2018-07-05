@@ -6,6 +6,16 @@
 \usage{
 rmnulls(x)
 }
+\arguments{
+\item{x}{[list] with [n] elements (NULL and non-NULL elements)}
+}
+\value{
+[list] with [n - \# NULL elements] elements
+}
 \description{
-Remove nulls from nested list
+Remove NULL elements from list
+}
+\examples{
+y <- list(a=1,b=2,c=NULL)
+y_nnull <- rmnulls(y)
 }

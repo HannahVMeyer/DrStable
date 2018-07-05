@@ -6,6 +6,16 @@
 \usage{
 ss(data)
 }
+\arguments{
+\item{data}{matrix of vector [float] to compute sum of squares for.}
+}
+\value{
+value [float] of sum of squares.
+}
 \description{
-Sum of squares
+Compute sum of squares of vector or matrix
+}
+\examples{
+x <- 1:10
+x_ss <- ss(x)
 }

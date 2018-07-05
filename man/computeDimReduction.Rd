@@ -4,16 +4,16 @@
 \alias{computeDimReduction}
 \title{Compute dimensionality reduction}
 \usage{
-computeDimReduction(method, Y, optN = NULL, ndim = NULL, kmin = 1,
-  kmax = 40, verbose = FALSE)
+computeDimReduction(Y, method, optN = NULL, ndim = NULL, kmin = 1,
+  kmax = 40, verbose = FALSE, parallel = FALSE)
 }
 \arguments{
+\item{Y}{[N x P] data matrix for which the dimensionality of P should be
+reduced}
+
 \item{method}{Dimensionality reduction method [string] to be applied; one of
 DiffusionsMaps, DRR, ICA, LLE, Isomap, LaplacianEigenmap, MDS, PCA, kPCA, 
 nMDS, tSNE and PEER}
-
-\item{Y}{[N x P] data matrix for which the dimensionality of P should be
-reduced}
 
 \item{optN}{optimal number [int] of neighbours to consider for dimensionality
 reduction; relevant for methods LLE, LaplacianEigenmaps, Isomap and tSNE. If 
@@ -30,6 +30,9 @@ of neighbours supplied to  \code{\link{lle::calc_k}}}
 
 \item{verbose}{[logical] If set, progress messages are printed to standard 
 out}
+
+\item{parallel}{if optN is not provided and parallel TRUE, parallel 
+computation on multiple cpu cores is used with \code{\link{lle::calc_k}}.}
 }
 \value{
 named list of results from dimensionality reduction; if multiple 

@@ -6,6 +6,16 @@
 \usage{
 invnorm(x)
 }
+\arguments{
+\item{x}{vector with [n] elements to normalise.}
+}
+\value{
+x vector with [n] normalised elements.
+}
 \description{
-Inverse normalise
+Apply rank-based qunatile normalistation to data
+}
+\examples{
+x <- seq(1,20,2)
+x_norm <- invnorm(x)
 }
