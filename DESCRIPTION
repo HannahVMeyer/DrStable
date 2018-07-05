@@ -17,7 +17,10 @@ Imports:
     kernlab (>= 0.9.26),
     Rtsne (>= 0.13),
     reshape2 (>= 1.4.3),
-    Hmisc (>= 4.1.1)
+    loe (>= 1.1),
+    RSpectra (>= 0.13.1),
+    Hmisc (>= 4.1.1),
+    ggplot2 (>= 2.2.1)
 Suggests:
     testthat,
     knitr,
