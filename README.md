@@ -13,3 +13,10 @@ objective criterion of what a good dimensionality reduction method is.
 Here, I define a stability criterion that measures the number of components that can be reliably recovered 
 in cross-validation and thus helps to determine the stable dimensions of the low-dimensional space.
 
+The current github version of *Stability* is: 0.1.1 and can be
+installed via
+```bash
+library(devtools)
+install_github("HannahVMeyer/Stability")
+```
+
