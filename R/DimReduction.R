@@ -40,9 +40,6 @@ computeDimReduction <-  function(Y, method, optN=NULL, ndim=NULL,
     N <- nrow(Y)
     P <- ncol(Y)
     
-    if (ndim > P) {
-        stop("ndim has to less than or equal to original column dimension")
-    }
     # number of dimensions to estimate
     if (is.null(ndim)) {
         if (P < N) {
@@ -54,6 +51,11 @@ computeDimReduction <-  function(Y, method, optN=NULL, ndim=NULL,
             ndim <- ndim -1
         }
     }
+    
+    if (ndim > P) {
+        stop("ndim has to less than or equal to original column dimension")
+    }
+    
     if (is.null(optN) && any(method %in% c("LLE", "LaplacianEigenmaps", 
                                            "Isomap", "tSNE"))) {
         nEstimate <- ndim/10
