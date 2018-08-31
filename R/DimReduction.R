@@ -114,12 +114,12 @@ methodsDimReduction <- function(Y, ndim,
         results <- lle::lle(Y, k=optN, m=ndim, id=TRUE)
         reducedY <- results$Y
     } else if (method == "Isomap") {
-        results <- vegan::isomap(dist(Y), ndim=100, k=optN, fragmentedOK=TRUE)
+        results <- vegan::isomap(dist(Y), ndim=ndim, k=optN, fragmentedOK=TRUE)
         reducedY <- results$points
     } else if (method == "LaplacianEigenmap") {
         library("dimRed")
         y <- as(as.data.frame(Y), "dimRedData")
-        results <- dimRed::embed(y, 'LaplacianEigenmaps', ndim=100, knn=optN)
+        results <- dimRed::embed(y, 'LaplacianEigenmaps', ndim=ndim, knn=optN)
         reducedY <- results@data@data
     } else if (method == "MDS") {
         results <- stats::cmdscale(dist(Y), k=ndim)
@@ -196,7 +196,8 @@ subsetDimReduction <- function(Y, seed, method, size=0.8, nrSubsets=10,
                                optN=NULL, ndim=NULL, kmin=1, kmax=40, 
                                verbose=FALSE, parallel=FALSE) {
     set.seed(seed)
-    sample_matrix <- sapply(1:nrSubsets, function(x) sample(nrow(Y), size*nrow(Y)))
+    sample_matrix <- sapply(1:nrSubsets, function(x) sample(nrow(Y),
+                                                            size*nrow(Y)))
     dr <- lapply(1:ncol(sample_matrix), function(x){
         y_cv <- Y[sample_matrix[,x],]
         vmessage(c("Crossvalidation:", x), verbose=verbose)
