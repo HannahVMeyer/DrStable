@@ -46,6 +46,31 @@ estimateStability <- function(dr, threshold, verbose=FALSE) {
                 medians_pass=medians_pass))
 }
 
+#' Format stability
+#' 
+#' Takes the output of \code{\link{estimateStability}} and returns stability
+#' estimates per component for the specified threshold
+#' @param es [list]
+#' @param threshold [double]
+#' @return dataframe with stability and component variables
+#' @export
+formatStability <- function(es, threshold) {
+    es$maxcor_long$abs_correlation <- abs(es$maxcor_long$correlation)
+    if (!any(es$maxcor_long$abs_correlation > threshold)) {
+        return(NULL)
+    }
+    stability_count <- reshape2::acast(es$maxcor_long,
+                                       component~., 
+                                       value.var="abs_correlation",
+                                       subset = .(abs_correlation > threshold),
+                                       length)
+    stability_norm <- as.numeric(stability_count)/
+        length(levels(es$maxcor_long$comparison))
+    componentCorr <- data.frame(stability=stability_norm,
+                                component=as.numeric(rownames(stability_count)))
+    return(componentCorr)
+}
+
 #' Apply compareSetup and format results
 #' 
 #' @param data_list [list]
