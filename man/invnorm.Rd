@@ -13,7 +13,7 @@ invnorm(x)
 x vector with [n] normalised elements.
 }
 \description{
-Apply rank-based qunatile normalistation to data
+Apply rank-based quantile normalistation to data.
 }
 \examples{
 x <- seq(1,20,2)

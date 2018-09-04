@@ -4,9 +4,9 @@
 \alias{methodsDimReduction}
 \title{Wrapper function for dimensionality reduction methods}
 \usage{
-methodsDimReduction(Y, ndim, method = c("DiffusionsMaps", "DRR", "ICA", "LLE",
-  "Isomap", "LaplacianEigenmap", "MDS", "PCA", "kPCA", "nMDS", "tSNE", "PEER"),
-  optN = NULL)
+methodsDimReduction(Y, ndim, method = c("DiffusionsMaps", "DRR", "ICA",
+  "LLE", "Isomap", "LaplacianEigenmap", "MDS", "PCA", "kPCA", "nMDS",
+  "tSNE", "PEER"), optN = NULL, verbose = FALSE, ...)
 }
 \arguments{
 \item{Y}{[N x P] data matrix for which the dimensionality of P should be
@@ -16,14 +16,14 @@ reduced}
 can cause long computation times}
 
 \item{method}{Dimensionality reduction method [string] to be applied; one of
-DiffusionsMaps, DRR, ICA, LLE, Isomap, LaplacianEigenmap, MDS, PCA, kPCA, 
+DiffusionsMaps, DRR, ICA, LLE, Isomap, LaplacianEigenmap, MDS, PCA, kPCA,
 nMDS, tSNE and PEER}
 
 \item{optN}{optimal number [int] of neighbours to consider for dimensionality
 reduction; relevant for methods LLE, LaplacianEigenmaps, Isomap and tSNE.}
 }
 \value{
-named list with dimensionality reduced phenotypes (reducedY) and 
+named list with dimensionality reduced phenotypes (reducedY) and
 object returned by specified dimensionality reduction method (results) with
 additional output, see details
 }

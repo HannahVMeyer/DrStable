@@ -13,7 +13,7 @@ rmnulls(x)
 [list] with [n - \# NULL elements] elements
 }
 \description{
-Remove NULL elements from list
+Remove NULL elements from list.
 }
 \examples{
 y <- list(a=1,b=2,c=NULL)
