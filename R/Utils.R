@@ -61,3 +61,38 @@ invnorm = function(x) {
 rmnulls <- function(x) {
     x[!vapply(x, is.null, logical(1))]
 }
+
+#' Comma-separated string to numeric vector.
+#'
+#' Split input of comma-separated string into vector of numeric, logical or
+#' character values.
+#'
+#' @param commastring Input [character] vector containing numbers separated by
+#' commas.
+#' @param type Name [string] of the type of input variables; one of numeric
+#' logical or character
+#' @return Numeric vector of values extracted from commastring.
+#' @export
+commaList2vector <- function(commastring=NULL, type="numeric") {
+    if (is.null(commastring)) {
+        return(NULL)
+    }
+    commastring <- gsub(" ", "", commastring)
+    tmp <- type.convert(unlist(strsplit(commastring, ",")), as.is=TRUE)
+    if (any(!is.numeric(tmp)) && type == "numeric") {
+        stop("Type numeric specified, but comma-list contains at least one
+             non-numeric argument")
+    }
+    if (any(!is.logical(tmp)) && type == "logical") {
+        stop("Type logical specified, but comma-list contains at least one
+             non-logical argument")
+    }
+    if (any(!is.character(tmp)) && type == "character") {
+        stop("Type character specified, but comma-list contains at least one
+             non-character argument")
+    }
+    if (! type  %in% c("numeric", "logical", "character")) {
+        stop("Unknown type of comma-separated list elements")
+    }
+    return(tmp)
+}

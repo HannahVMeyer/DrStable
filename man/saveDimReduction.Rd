@@ -4,18 +4,29 @@
 \alias{saveDimReduction}
 \title{Save results of dimensionality reduction}
 \usage{
-saveDimReduction(results, outdir)
+saveDimReduction(results, method, outdir = NULL, name = NULL,
+  prefix = NULL)
 }
 \arguments{
-\item{results}{named list of results from dimensionality reduction; if 
-multiple methods were specified, each named list entry containing:
-Y_red: named list with dimensionality reduced phenotypes (reducedY) and 
+\item{results}{named list of results from dimensionality reduction;
+Y_red: named list with dimensionality reduced phenotypes (reducedY) and
 object returned by specified dimensionality reduction method (results) with
 additional output.
 M: vector [double] with Trustworthiness and Continuity estimates for the
 dimensionality reduction.}
 
-\item{outdir}{path/to/directory [string] where results will be saved.}
+\item{method}{[string] name of dimensionality reduction method; will be
+appended to output file name.}
+
+\item{outdir}{[string] full path/to/directory [string] where results will be
+saved. Full file name will be created by outdir/name_method.csv.
+Alternatively, prefix can be provided to create file prefix_method.csv.}
+
+\item{name}{[string] name of output file}
+
+\item{prefix}{[string] of output file name, containing full
+path/to/directory [string] where results will be saved. Results will be saved
+as prefix_method.csv}
 }
 \description{
 Save results of dimensionality reduction

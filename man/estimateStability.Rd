@@ -18,5 +18,7 @@ out}
 named list
 }
 \description{
-Estimate stability
+Takes the output of \code{\link{subsetDimReduction}} and finds
+the stable low-dimension components across dimensionality reduced
+subsets of the original data.
 }

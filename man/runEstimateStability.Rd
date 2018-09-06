@@ -8,19 +8,19 @@ runEstimateStability()
 }
 \description{
 estimateStability runs without arguments. Upon call, it reads command-line
-parameters and supplies these to \code{\link{}} and 
-\code{\link{}}. For details on input to \code{\link{}} 
-and \code{\link{}}, please refer to their help pages. For help on 
-the command line arguments that can be passed, see examples below. From the 
-command line, the help function can be called via 
-'Rscript -e "Stability::estimateStability()" --args --help
+parameters and supplies these to \code{\link{}} and
+\code{\link{}}. For details on input to \code{\link{}}
+and \code{\link{}}, please refer to their help pages. For help on
+the command line arguments that can be passed, see examples below. From the
+command line, the help function can be called via
+Rscript -e "Stability::estimateStability()" --args --help
 }
 \examples{
 # (not run)
 #
 # (not run)
 # Rscript -e "Stability::estimateStability()" \\
-#--args \\ 
+#--args \\
 #--directory=/tmp \\
 #--showProgress \\
 }

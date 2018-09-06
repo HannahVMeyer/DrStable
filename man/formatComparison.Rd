@@ -7,7 +7,7 @@
 formatComparison(comparison_list)
 }
 \arguments{
-\item{comparison_list}{output [list] from resulsComparison containing with 
+\item{comparison_list}{output [list] from resultsComparison with 
 the size of the overlapping samples between samples sets (size), the
 reordered correlation coefficients (reorder), the maximum correlation
 (maxcor), the original column-wise correlation coefficients 
