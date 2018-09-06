@@ -20,6 +20,8 @@
 #' computation on multiple cpu cores is used with \code{\link{lle::calc_k}}
 #' @param verbose [logical] If set, progress messages are printed to standard
 #' out
+#' @param is.list.ellipsis [logical] if ... arguments are provided as list, set
+#' TRUE.
 #' @return named list of results from dimensionality reduction:
 #' Y_red:  named list with dimensionality reduced phenotypes (reducedY) and
 #' object returned by specified dimensionality reduction method (results) with
@@ -35,7 +37,14 @@
 #' dr <- computeDimReduction(y, method="MDS")
 computeDimReduction <-  function(Y, method, optN=NULL, ndim=NULL,
                                  kmin=1, kmax=40, verbose=FALSE,
-                                 parallel=FALSE) {
+                                 parallel=FALSE, is.list.ellipsis=FALSE,...) {
+    params <- list(...)
+    if (length(params) == 0) {
+        params <- NULL
+    } else {
+        if (is.list.ellipsis) params <- params[[1]]
+    }
+
     # phenotype dimensions
     N <- nrow(Y)
     P <- ncol(Y)
@@ -75,7 +84,8 @@ computeDimReduction <-  function(Y, method, optN=NULL, ndim=NULL,
     vmessage(c("Running dimensionality reduction:", method), verbose=verbose)
 
     # dimensionalityReduction
-    red <- methodsDimReduction(Y=Y, method=method, ndim=ndim, optN=optN)
+    red <- methodsDimReduction(Y=Y, method=method, ndim=ndim, optN=optN,
+        params=params)
     rownames(red$reducedY) <- rownames(Y)
     colnames(red$reducedY) <- paste("DR", 1:ncol(red$reducedY), sep="")
 
@@ -94,7 +104,7 @@ computeDimReduction <-  function(Y, method, optN=NULL, ndim=NULL,
 #' @param params [list] of parameters to check; list names must be identical
 #' to argument names of chosen dimensionality reduction method.
 #' @param method Dimensionality reduction method [string] to be applied; one of
-#' DiffusionsMaps, DRR, ICA, LLE, Isomap, LaplacianEigenmap, MDS, PCA, kPCA,
+#' DiffusionMap, DRR, ICA, LLE, Isomap, LaplacianEigenmap, MDS, PCA, kPCA,
 #' nMDS, tSNE, UMAP and PEER
 #' @export
 #' @return named list with default and specified parameters taken by specified
@@ -103,7 +113,7 @@ computeDimReduction <-  function(Y, method, optN=NULL, ndim=NULL,
 #' params_DRR <- checkParams(list(cv.folds=10), method="DRR")
 #' params_ICA <- checkParams(list(fun="logcosh", maxit=500), method="ICA")
 checkParams <- function(params, method) {
-    if (method == "DiffusionMaps") {
+    if (method == "DiffusionMap") {
         optionalParams <- list(eps.val="epsilonCompute(D)", neigen=NULL, t=0,
             maxdim=50, delta=10^-5)
     } else if (method == "DRR") {
@@ -115,6 +125,9 @@ checkParams <- function(params, method) {
         optionalParams <- list(alg.typ=c("parallel", "deflation"),
             fun=c("logcosh", "exp"), alpha=1, method=c("R", "C"), row.norm=FALSE,
             maxit=200, tol=1e-04, w.init=NULL)
+    } else if (method == "LaplacianEigenmap") {
+        optionalParams <- list(k='as.integer(2 * log(nrow(DM)))', sym=FALSE,
+            weight=FALSE, p=NULL, norm=TRUE)
     } else if (method == "LLE") {
         optionalParams <- list(reg=2, ss=FALSE,p= 0.5, id=FALSE, nnk=TRUE,
             eps=1, iLLE=FALSE, v=0.99)
@@ -132,7 +145,7 @@ checkParams <- function(params, method) {
     } else if (method == "nMDS") {
         optionalParams <- list( distance="bray", k=2, try=20, trymax=20,
             engine=c("monoMDS", "isoMDS"), autotransform=TRUE,
-            noshare=(engine == "isoMDS"), wascores=TRUE, expand=TRUE, trace=1,
+            noshare='(engine == "isoMDS")', wascores=TRUE, expand=TRUE, trace=1,
             plot=FALSE)
     } else if (method == "tSNE") {
         optionalParams <- list(theta=0.5, check_duplicates=TRUE, pca=TRUE,
@@ -144,20 +157,26 @@ checkParams <- function(params, method) {
         optionalParams <- umap::umap.defaults
     } else {
          stop("Method: ", method, " does not exist, possible methods are: ",
-             "DiffusionsMaps, DRR, ICA, LLE, Isomap, LaplacianEigenmap, MDS,",
+             "DiffusionMap, DRR, ICA, LLE, Isomap, LaplacianEigenmap, MDS,",
              "PCA,", "kPCA, nMDS, tSNE, UMAP and PEER")
     }
-    unusedParams <- setdiff(names(params), names(optionalParams))
-    if(length(unusedParams)) {
-        stop('Method is ', method, ' and non-method parameters provided: ',
-            paste(unusedParams, collapse = ', '))
-    }
-    usedParams <- optionalParams[order(names(optionalParams))]
-    params <- params[order(names(params))]
-    usedParams[names(usedParams) %in%  names(params)] <- params
-    usedParams <- usedParams[match(names(optionalParams), names(usedParams))]
-    if(method == "UMAP") {
-        class(usedParams) <- class(umap::umap.defaults)
+    if (!is.null(params)) {
+        params <-  ifelse(params=="TRUE", TRUE, params)
+        params <-  ifelse(params=="FALSE", FALSE, params)
+        unusedParams <- setdiff(names(params), names(optionalParams))
+        if(length(unusedParams)) {
+            stop('Method is ', method, ' and non-method parameters provided: ',
+                paste(unusedParams, collapse = ', '))
+        }
+        usedParams <- optionalParams[order(names(optionalParams))]
+        params <- params[order(names(params))]
+        usedParams[names(usedParams) %in%  names(params)] <- params
+        usedParams <- usedParams[match(names(optionalParams), names(usedParams))]
+        if(method == "UMAP") {
+            class(usedParams) <- class(umap::umap.defaults)
+        }
+    } else {
+        usedParams <- optionalParams
     }
     return(usedParams)
 }
@@ -166,6 +185,12 @@ checkParams <- function(params, method) {
 #'
 #' @param Y [N x P] data matrix for which the dimensionality of P should be
 #' reduced
+#' @param distY [dist] object of class dist containing pairwise distances of Y
+#' used for methods DiffusionMap, Isomap, MDS and nMDS; if non specified,
+#' stats::dist with Euclidean distance applied to supplied Y.
+#' @param dist.method [string] method for computing the distance matrix; one of
+#' euclidean, maximum, manhattan, canberra, binary or minkowski; see
+#' \link{\code{stats::dist}} for details.
 #' @param method Dimensionality reduction method [string] to be applied; one of
 #' DiffusionsMaps, DRR, ICA, LLE, Isomap, LaplacianEigenmap, MDS, PCA, kPCA,
 #' nMDS, tSNE and PEER
@@ -173,24 +198,59 @@ checkParams <- function(params, method) {
 #' reduction; relevant for methods LLE, LaplacianEigenmaps, Isomap and tSNE.
 #' @param ndim maximum dimensionality [int] to retain in the data; large values
 #' can cause long computation times
+#' @param verbose [logical] If set, progress messages are printed to standard
+#' out
+#' @param params [list] optional additional parameters for dimensionality
+#' reduction methods; see details
 #' @return named list with dimensionality reduced phenotypes (reducedY) and
 #' object returned by specified dimensionality reduction method (results) with
 #' additional output, see details
-methodsDimReduction <- function(Y, ndim,
-                                method=c("DiffusionsMaps", "DRR", "ICA",
+methodsDimReduction <- function(Y, ndim, distY=dist(Y, method=dist.method),
+                                dist.method="euclidean",
+                                method=c("DiffusionMap", "DRR", "ICA",
                                          "LLE", "Isomap", "LaplacianEigenmap",
                                          "MDS", "PCA","kPCA", "nMDS",
                                          "tSNE", "PEER", "UMAP"),
-                                optN=NULL, verbose=FALSE, ...){
+                                optN=NULL, verbose=FALSE, params=NULL){
 
-    params <- list(...)
+
     usedParams <- checkParams(params=params, method=method)
 
-    if (method == "DiffusionsMaps") {
-        if (usedParams$eps.val  == "epsilonCompute(D)") {
-            usedParams$eps.val <- diffuse::epsilonCompute(dist(Y))
+    if (is.null(optN) && any(method %in% c("LLE", "LaplacianEigenmaps",
+                                           "Isomap", "tSNE"))) {
+        if (method == "tSNE" && !is.null(usedParams$perplexity)) {
+            optN <- usedParams$perplexity
+        } else {
+            stop("For", method, ", optN or perplexity have to specified")
         }
-        results <- diffusionMap::diffuse(D=dist(Y), neigen=ndim,
+        if (method == "LLE" && !is.null(usedParams$k)) {
+            optN <- usedParams$k
+        } else {
+            stop("For", method, ", optN or k have to specified")
+        }
+        if (method == "LaplacianEigenmaps" && !is.null(usedParams$k)) {
+            optN <- usedParams$k
+        } else {
+            stop("For", method, ", either optN or k have to specified")
+        }
+        if (method == "Isomap") {
+            if (!is.null(usedParams$k)) {
+                optN <- usedParams$k
+            } else if (!is.null(usedParams$epsilon)) {
+                optN <- NULL
+            } else {
+                stop("For", method, ", either optN, k, or epsilon have to",
+                     " specified")
+            }
+        }
+    }
+
+
+    if (method == "DiffusionMap") {
+        if (usedParams$eps.val  == "epsilonCompute(D)") {
+            usedParams$eps.val <- diffusionMap::epsilonCompute(dist(Y))
+        }
+        results <- diffusionMap::diffuse(D=distY, neigen=ndim,
             eps.val=usedParams$eps.val, t=usedParams$t, delta=usedParams$delta)
         reducedY <- results$X
     } else if (method == "DRR") {
@@ -210,7 +270,7 @@ methodsDimReduction <- function(Y, ndim,
            usedParams$methods="C"
         }
         results <- fastICA::fastICA(Y, n.comp=ndim, fun=usedParams$fun,
-             method=usedParams$method, alg.type=usedParams$alg.type,
+             method=usedParams$method, alg.typ=usedParams$alg.typ,
              alpha=usedParams$alpha, row.norm=usedParams$row.norm,
              maxit=usedParams$maxit, tol=usedParams$tol,
              w.init=usedParams$w.init, verbose=verbose)
@@ -221,20 +281,23 @@ methodsDimReduction <- function(Y, ndim,
             eps=usedParams$eps, iLLE=usedParams$iLLE, v=usedParams$v)
         reducedY <- results$Y
     } else if (method == "Isomap") {
-        results <- vegan::isomap(dist=dist(Y), ndim=ndim, k=optN,
+        results <- vegan::isomap(dist=distY, ndim=ndim, k=optN,
             epsilon=usedParams$epsilon, path=usedParams$path, fragmentedOK=TRUE)
         reducedY <- results$points
     } else if (method == "LaplacianEigenmap") {
-        library("dimRed")
-        y <- as(as.data.frame(Y), "dimRedData")
-        results <- dimRed::embed(y, 'LaplacianEigenmaps', ndim=ndim, knn=optN)
-        reducedY <- results@data@data
+        DM <- as.matrix(distY)
+        if (optN  == 'as.integer(2 * log(nrow(DM)))') {
+            optN <- as.integer(2 * log(nrow(DM)))
+        }
+        ADM <- loe::make.kNNG(DM, k=optN)
+        results <- Re(loe::spec.emb(A=ADM, p=ndim, norm=usedParams$norm))
+        reducedY <- results
     } else if (method == "MDS") {
         if (usedParams$list. == "eig || add || x.ret") {
             usedParams$list. <-
                 usedParams$eig || usedParams$add || usedParams$x.ret
         }
-        results <- stats::cmdscale(d=dist(Y), k=ndim, eig=usedParams$eig,
+        results <- stats::cmdscale(d=distY, k=ndim, eig=usedParams$eig,
             add=usedParams$add, x.ret=usedParams$x.ret, list.=usedParams$list.)
         reducedY <- results
     } else if (method == "PCA") {
@@ -247,7 +310,10 @@ methodsDimReduction <- function(Y, ndim,
         kpar=usedParams$kpar, th=usedParams$th, na.action=usedParams$na.action)
         reducedY <- results@rotated
     } else if (method == "nMDS") {
-        results <- vegan::metaMDS(dist(Y), k=ndim, distance=usedParams$distance,
+        if (usedParams$noshare == '(engine == "isoMDS")') {
+            usedParams$noshare <- usedParams$engine == "isoMDS"
+        }
+        results <- vegan::metaMDS(distY, k=ndim, distance=usedParams$distance,
             try=usedParams$try, trymax=usedParams$trymax,
             engine=usedParams$engine, autotransform=usedParams$autotransform,
             noshare=usedParams$noshare, wascores=usedParams$wascroes,
@@ -263,7 +329,7 @@ methodsDimReduction <- function(Y, ndim,
             usedParams$max_switch_iter <-
                 ifelse(is.null(usedParams$Y_init), 250L, 0L)
         }
-        results <- Rtsne::Rtsne(Y, dims=ndim, initial_dims=ndim,
+        results <- Rtsne::Rtsne(X=Y, dims=ndim, initial_dims=ndim,
             perplexity=optN, verbose=verbose, theta=usedParams$theta,
             check_duplicates=usedParams$check_duplicates, pca=usedParams$pca,
             max_iter=usedParams$max_iter, is_distance=usedParams$is_distance,
@@ -310,7 +376,7 @@ methodsDimReduction <- function(Y, ndim,
 #' @param nrSubsets [int] number of subsets to generate and apply dimensionality
 #' reduction to.
 #' @param method dimensionality reduction method [string] to be applied; one of
-#' DiffusionsMaps, DRR, ICA, LLE, Isomap, LaplacianEigenmap, MDS, PCA, kPCA,
+#' DiffusionMap, DRR, ICA, LLE, Isomap, LaplacianEigenmap, MDS, PCA, kPCA,
 #' nMDS, tSNE and PEER.
 #' @param optN optimal number [int] of neighbours to consider for dimensionality
 #' reduction; relevant for methods LLE, LaplacianEigenmaps, Isomap and tSNE. If
