@@ -29,7 +29,7 @@ runCreateSubsets <- function() {
                     help="Path to (optional) comma-separated covariate file 
                     with N samples (rows) and C covariates (columns). [default: 
                     %default]."),
-        make_option(c("-s", "--seed"), action="store", dest="seed", default=234,
+        make_option(c("--seed"), action="store", dest="seed", default=234,
                     type="integer", help="Seed to initialise random number 
                     generator [default: %default]."),
         make_option(c("-n", "--nrCV"), action="store", dest="nrCV", 
@@ -240,91 +240,5 @@ runDimensionalityReduction <- function() {
         }
         dr <- computeDimReduction(m=args$method, Y=Y, output=output,
                                   ndim=args$dim)
-    }
-}
-
-
-#' Command line execution for Stability
-#' 
-#' estimateStability runs without arguments. Upon call, it reads command-line
-#' parameters and supplies these to \code{\link{}} and 
-#' \code{\link{}}. For details on input to \code{\link{}} 
-#' and \code{\link{}}, please refer to their help pages. For help on 
-#' the command line arguments that can be passed, see examples below. From the 
-#' command line, the help function can be called via 
-#' 'Rscript -e "Stability::estimateStability()" --args --help 
-#'  
-#' @export
-#' 
-#' @examples
-#' # (not run)
-#' #
-#' # (not run)
-#' # Rscript -e "Stability::estimateStability()" \
-#' #--args \ 
-#' #--directory=/tmp \
-#' #--showProgress \
-
-
-runEstimateStability <- function() {
-    option_list <- list(
-        make_option(c("--NrSamples"), action="store", dest="NrSamples", 
-                    type="integer", help="Number of samples to 
-                    simulate [default: %default]."),
-        make_option(c("--NrPhenotypes"), action="store", dest="NrPhenotypes", 
-                    type="integer", help="Number of phenotypes to 
-                    simulate [default: %default]."),
-        make_option(c("--showProgress"), action="store_true", dest="verbose", 
-                    default=FALSE, type="logical", help="If set, progress 
-                    messages about simulation steps are printed to standard out
-                    [default: %default]."))
-    
-    args <- parse_args(OptionParser(option_list=option_list))
-    args <- commandArgs(asValue= TRUE, defaults=list(cv=FALSE, seed=234, 
-                                                     ndim=NULL, covariatefile=NULL,
-                                                     createSubsets=FALSE))
-    args <- commandArgs(asValue= TRUE, 
-                        defaults=list(cv=10))
-    
-    cat(unlist(args), "\n")
-    
-    # path to input file 
-    analysisdir <- args$dir
-    # NrSamples
-    N <- as.numeric(args$N)
-    # output_prefix
-    output <- args$output
-    # method(s)
-    method <-  args$method
-    # cv
-    crossvalidate <- as.numeric(args$cv)
-    
-    dr  <- lapply(1:crossvalidate, function(cv, d) {
-        filecv <- paste(d, "/CV", cv, "_",  method, "_reducedY.csv", 
-                        sep="")
-        if (file.exists(filecv)) {
-            datacv <- t(as.matrix(read.csv(filecv, sep=",", header=TRUE, 
-                                           row.names=1)))
-            if (method == "") {
-                datacv <- datacv[-1,]
-                rownames(datacv) <- paste("DR", 1:100, sep="")
-            }
-        } else {
-            datacv <- NULL
-        }
-        return(datacv)
-    }, d=analysisdir)
-    names(dr) <- paste("cv", 1:crossvalidate, sep="")
-    
-    dr <- rmnulls(dr)
-    
-    if (length(dr) > 1) {
-        cat("Determine robustness of ", method, " for ", N, " samples")
-        color=c(wes_palette(20, name="Zissou", type='continuous'))
-        threshold=seq(0.0, 0.95, 0.05)
-        results <- analyseDimreduction(dr, output=output, threshold=threshold)
-        saveRDS(results, paste(output, "/", method, "_robustness.rds", sep=""))
-    } else {
-        cat("Not enough datasets (#", length(dr), ") to compute robustness")
     }
 }
