@@ -7,15 +7,23 @@
 estimateStability(dr, threshold, verbose = FALSE)
 }
 \arguments{
-\item{dr}{[list]}
+\item{dr}{[list] either output of \code{\link{subsetDimReduction}} or
+manually generated list with dimensionality reduction results on different
+subsets of the same dataset. Each list entry is a matrix with row and column
+names; row.names are crucial to allow for the comparison of the lower
+dimensional embedding across common sample sets.}
 
-\item{threshold}{[double]}
+\item{threshold}{[double] Threshold for stability; can be single double
+between 0 and 1 or vector of thresholds between 0 and 1.}
 
-\item{verbose}{[logical] If set, progress messages are printed to standard 
+\item{verbose}{[logical] If set, progress messages are printed to standard
 out}
 }
 \value{
-named list
+named list with [1] stability: list with one dataframe per threshold,
+where each dataframe contains the stability estimate of the low-dimensional
+components for that threshold value, [2] corr: data.frame with correlation of
+the low-dimensional components for all pairwise comparisons and components.
 }
 \description{
 Takes the output of \code{\link{subsetDimReduction}} and finds

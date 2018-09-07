@@ -16,7 +16,7 @@ data P, with the same sample order as set1}
 \item{type}{type [string] of correlation to use, one of spearman or pearson}
 }
 \value{
-named list with correlation coefficient (r) and p-value of 
+named list with correlation coefficient (r) and p-value of
 correlation (p) for each column-column correlation
 }
 \description{

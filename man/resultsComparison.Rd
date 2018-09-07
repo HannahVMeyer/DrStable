@@ -7,15 +7,18 @@
 resultsComparison(data_list, verbose = FALSE)
 }
 \arguments{
-\item{data_list}{[list]}
+\item{data_list}{[list] output of \code{\link{subsetDimReduction}}. Each list
+entry is a matrix with row and column names; row.names are crucial to allow
+for the comparison of the lower dimensional embedding across common sample
+sets.}
 
-\item{verbose}{[logical] If set, progress messages are printed to standard 
+\item{verbose}{[logical] If set, progress messages are printed to standard
 out}
 }
 \value{
-named list with the size of the overlapping samples between samples 
-sets (size), the reordered correlation coefficients (reorder), the maximum 
-correlation (maxcor), the original column-wise correlation coefficients 
+named list with the size of the overlapping samples between samples
+sets (size), the reordered correlation coefficients (reorder), the maximum
+correlation (maxcor), the original column-wise correlation coefficients
 (componentxcomponent_r) and the reordered column-wise correlation
 coefficients (componentxcomponent_r_reordered)
 }

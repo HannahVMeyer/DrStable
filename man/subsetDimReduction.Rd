@@ -16,7 +16,7 @@ reduced,}
 subsets of Y.}
 
 \item{method}{dimensionality reduction method [string] to be applied; one of
-DiffusionsMaps, DRR, ICA, LLE, Isomap, LaplacianEigenmap, MDS, PCA, kPCA,
+DiffusionMap, DRR, ICA, LLE, Isomap, LaplacianEigenmap, MDS, PCA, kPCA,
 nMDS, tSNE and PEER.}
 
 \item{size}{[float] proportion of samples from total number of samples to

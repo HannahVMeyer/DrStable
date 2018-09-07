@@ -4,9 +4,10 @@
 \alias{methodsDimReduction}
 \title{Wrapper function for dimensionality reduction methods}
 \usage{
-methodsDimReduction(Y, ndim, method = c("DiffusionsMaps", "DRR", "ICA",
-  "LLE", "Isomap", "LaplacianEigenmap", "MDS", "PCA", "kPCA", "nMDS",
-  "tSNE", "PEER"), optN = NULL, verbose = FALSE, ...)
+methodsDimReduction(Y, ndim, distY = dist(Y, method = dist.method),
+  dist.method = "euclidean", method = c("DiffusionMap", "DRR", "ICA", "LLE",
+  "Isomap", "LaplacianEigenmap", "MDS", "PCA", "kPCA", "nMDS", "tSNE", "PEER",
+  "UMAP"), optN = NULL, verbose = FALSE, params = NULL)
 }
 \arguments{
 \item{Y}{[N x P] data matrix for which the dimensionality of P should be
@@ -15,12 +16,26 @@ reduced}
 \item{ndim}{maximum dimensionality [int] to retain in the data; large values
 can cause long computation times}
 
+\item{distY}{[dist] object of class dist containing pairwise distances of Y
+used for methods DiffusionMap, Isomap, MDS and nMDS; if non specified,
+stats::dist with Euclidean distance applied to supplied Y.}
+
+\item{dist.method}{[string] method for computing the distance matrix; one of
+euclidean, maximum, manhattan, canberra, binary or minkowski; see
+\link{\code{stats::dist}} for details.}
+
 \item{method}{Dimensionality reduction method [string] to be applied; one of
 DiffusionsMaps, DRR, ICA, LLE, Isomap, LaplacianEigenmap, MDS, PCA, kPCA,
 nMDS, tSNE and PEER}
 
 \item{optN}{optimal number [int] of neighbours to consider for dimensionality
 reduction; relevant for methods LLE, LaplacianEigenmaps, Isomap and tSNE.}
+
+\item{verbose}{[logical] If set, progress messages are printed to standard
+out}
+
+\item{params}{[list] optional additional parameters for dimensionality
+reduction methods; see details}
 }
 \value{
 named list with dimensionality reduced phenotypes (reducedY) and

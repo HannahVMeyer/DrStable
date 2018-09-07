@@ -7,20 +7,27 @@
 runEstimateStability()
 }
 \description{
-estimateStability runs without arguments. Upon call, it reads command-line
-parameters and supplies these to \code{\link{}} and
-\code{\link{}}. For details on input to \code{\link{}}
-and \code{\link{}}, please refer to their help pages. For help on
-the command line arguments that can be passed, see examples below. From the
-command line, the help function can be called via
-Rscript -e "Stability::estimateStability()" --args --help
+runEstimateStability runs without arguments. Upon call, it reads command-line
+parameters and supplies these to \code{\link{estimateStability}}.
+It reads the dimensionality reduction results from the cross-validation (
+Rscript -e "Stability::runDimReduction()") and analyses the stability of
+the low-dimensional embedding via \code{\link{estimateStability}}. For
+details on \code{\link{estimateStability}} please refer to the help pages.
+For help on the command line arguments that can be passed, see examples
+below. From the command line, the help function can be called via
+Rscript -e "Stability::runEstimateStability()" --args --help
 }
 \examples{
 # (not run)
-#
-# (not run)
-# Rscript -e "Stability::estimateStability()" \\
+# Rscript -e "Stability::runEstimateStability()" \\
 #--args \\
-#--directory=/tmp \\
+#--highdim=/path/to/highdimfile \\
+#--cov=/path/to/optional/covariatefile \\
+#--seed=234 \\
+#--nrCV=10 \\
+#--neighbours=8 \\
+#--method=DRR \\
+#--name=Dimreduction_highdimfile \\
+#--outdir=/tmp \\
 #--showProgress \\
 }

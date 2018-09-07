@@ -13,7 +13,7 @@ data P}
 \item{set2}{[M2 x D] matrix with M2 samples and D dimensionality reduced
 data P}
 
-\item{verbose}{[logical] If set, progress messages are printed to standard 
+\item{verbose}{[logical] If set, progress messages are printed to standard
 out}
 }
 \value{

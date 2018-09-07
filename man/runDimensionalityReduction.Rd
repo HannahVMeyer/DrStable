@@ -8,19 +8,29 @@ runDimensionalityReduction()
 }
 \description{
 runDimensionalityReduction runs without arguments. Upon call, it reads
-command-line parameters and supplies these to \code{\link{}} and
-\code{\link{}}. For details on input to \code{\link{}}
-and \code{\link{}}, please refer to their help pages. For help on
+command-line parameters and reads the [highdim] and potential [cov] data.
+If provided, [cov] will be regressed from [highdim] prior to dimensionality
+reduction. Dimensionality reduction and saving of the results are done by
+passing the [highdim] data, [method], [dim], [neighbours] and potential
+optional other, method-specific parameters ([dimRedParams]) to
+\code{\link{computeDimReduction}} and \code{\link{saveDimReduction}}. For
+details on input to \code{\link{computeDimReduction}} and
+\code{\link{saveDimReduction}}, please refer to their help pages. For help on
 the command line arguments that can be passed, see examples below. From the
 command line, the help function can be called via
 Rscript -e "Stability::runDimensionalityReduction()" --args --help
 }
 \examples{
 # (not run)
-# :
-# (not run)
 # Rscript -e "Stability::runDimensionalityReduction()" \\
 #--args \\
-#--directory=/tmp \\
+#--highdim=/path/to/highdimfile \\
+#--cov=/path/to/optional/covariatefile \\
+#--seed=234 \\
+#--dim=10 \\
+#--neighbours=8 \\
+#--method=DRR \\
+#--name=Dimreduction_highdimfile \\
+#--outdir=/tmp \\
 #--showProgress \\
 }

@@ -7,7 +7,7 @@
 formatComparison(comparison_list)
 }
 \arguments{
-\item{comparison_list}{output [list] from resultsComparison with 
+\item{comparison_list}{output [list] from resultsComparison with
 the size of the overlapping samples between samples sets (size), the
 reordered correlation coefficients (reorder), the maximum correlation
 (maxcor), the original column-wise correlation coefficients 
@@ -16,9 +16,9 @@ coefficients (componentxcomponent_r_reordered)}
 }
 \value{
 list with same entries as input list, formated to only contain unique
-comparisons: size of the overlapping samples between samples 
-sets (size), the reordered correlation coefficients (reorder), the maximum 
-correlation (maxcor), the original column-wise correlation coefficients 
+comparisons: size of the overlapping samples between samples
+sets (size), the reordered correlation coefficients (reorder), the maximum
+correlation (maxcor), the original column-wise correlation coefficients
 (componentxcomponent_r) and the reordered column-wise correlation
 coefficients (componentxcomponent_r_reordered)
 }

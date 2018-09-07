@@ -7,14 +7,14 @@
 analyseCorrelation(mat, verbose = FALSE)
 }
 \arguments{
-\item{mat}{[D x D] matrix with correlation coefficients from column-wise 
+\item{mat}{[D x D] matrix with correlation coefficients from column-wise
 comparison of D lower dimensions}
 
-\item{verbose}{[logical] If set, progress messages are printed to standard 
+\item{verbose}{[logical] If set, progress messages are printed to standard
 out}
 }
 \value{
-named list with ordering of the correlations (reorder) and the 
+named list with ordering of the correlations (reorder) and the
 maximum correlations (maxcor)
 }
 \description{
