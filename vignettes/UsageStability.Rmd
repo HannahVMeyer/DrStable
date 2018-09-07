@@ -62,12 +62,10 @@ stability <- lapply(seq_along(dr), function(a, threshold) {
     tmp <- lapply(seq_along(nonlinear), function(m) {
         es <- estimateStability(nonlinear[[m]], threshold=threshold,
                                  verbose=TRUE)
-        fs <- formatStability(es)
-        if(!is.null(fs)) {
-            fs$methods <- methods[m]
-            fs$alpha <- alpha[a]
-        }
-        return(fs)
+        stab <- es[[1]]
+        stab$methods <- methods[m]
+        stab$alpha <- alpha[a]
+        return(stab)
     })
     return(do.call(rbind, tmp))
 }, threshold=threshold)
