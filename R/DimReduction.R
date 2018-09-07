@@ -391,6 +391,8 @@ methodsDimReduction <- function(Y, ndim, distY=dist(Y, method=dist.method),
 #' computation on multiple cpu cores is used with \code{\link{lle::calc_k}}.
 #' @param verbose [logical] If set, progress messages are printed to standard
 #' out.
+#' @param is.list.ellipsis [logical] if ... arguments are provided as list, set
+#' TRUE.
 #' @return list of size nrSubsets, containing at each entry a named list of
 #' results from \link{\code{computeDimReduction}}:
 #' Y_red:  named list with dimensionality reduced phenotypes (reducedY) and
@@ -400,9 +402,10 @@ methodsDimReduction <- function(Y, ndim, distY=dist(Y, method=dist.method),
 #' dimensionality reduction
 #'
 #' @export
-subsetDimReduction <- function(Y, seed, method, size=0.8, nrSubsets=10,
-                               optN=NULL, ndim=NULL, kmin=1, kmax=40,
-                               verbose=FALSE, parallel=FALSE) {
+subsetDimReduction <- function(Y, seed, size=0.8, nrSubsets=10, method,
+                               optN=NULL, ndim=NULL,
+                               kmin=1, kmax=40, verbose=FALSE,
+                               parallel=FALSE, is.list.ellipsis=FALSE, ...) {
     set.seed(seed)
     sample_matrix <- sapply(1:nrSubsets, function(x) sample(nrow(Y),
                                                             size * nrow(Y)))
@@ -411,7 +414,8 @@ subsetDimReduction <- function(Y, seed, method, size=0.8, nrSubsets=10,
         vmessage(c("Crossvalidation:", x), verbose=verbose)
         dimRed <- computeDimReduction(Y=y_cv, ndim=ndim, method=method,
                                   kmin=kmin, kmax=kmax, optN=optN,
-                                  verbose=verbose, parallel=parallel)
+                                  verbose=verbose, parallel=parallel,
+                                  is.list.ellipsis=FALSE, ...)
         return(dimRed)
     })
     return(dr)
