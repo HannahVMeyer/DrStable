@@ -8,79 +8,80 @@
 #' subsets of the same dataset. Each list entry is a matrix with row and column
 #' names; row.names are crucial to allow for the comparison of the lower
 #' dimensional embedding across common sample sets.
-#' @param threshold [double] Threshold for stability; can be single double
-#' between 0 and 1 or vector of thresholds between 0 and 1.
+#' @param threshold [double] Threshold for stability between 0 and 1 or vector 
+#' of thresholds between 0 and 1.
 #' @param verbose [logical] If set, progress messages are printed to standard
 #' out
-#' @return named list with comparison, maxcor, maxcor_long, medians_maxcor, pass, pass_long, medians_pass
+#' @return named list with [1] stability: list with one dataframe per threshold,
+#' where each dataframe contains the stability estimate of the low-dimensional
+#' components for that threshold value, [2] corr: data.frame with correlation of
+#' the low-dimensional components for all pairwise comparisons and components.
 #' @export
 estimateStability <- function(dr, threshold, verbose=FALSE) {
     comparison  <- resultsComparison(dr, verbose=verbose)
     formated <- formatComparison(comparison)
-    maxcor <- formated$maxcor
-    rownames(maxcor) <- unlist(sapply(1:(length(comparison)-1), function(i) {
+    cor_matrix <- formated$maxcor
+    rownames(cor_matrix) <- unlist(sapply(1:(length(comparison)-1), 
+                                             function(i) {
         sapply(i:(length(comparison)-1), function(j, i) {
             paste(names(comparison)[i], names(comparison)[j+1],sep="_")
         }, i=i)
     }))
-    maxcor_long <- reshape2::melt(maxcor)
-    colnames(maxcor_long) <- c("comparison", "component", "correlation")
-    medians_maxcor <- stats::aggregate(abs(correlation) ~ component, maxcor_long,
-                                       median)
-    colnames(medians_maxcor)[2] <- "abs_correlation" 
-    medians_maxcor$threshold <- 
-        sapply(medians_maxcor$abs_correlation, function(m) {
+    
+    cor_df <- reshape2::melt(cor_matrix)
+    colnames(cor_df) <- c("comparison", "component", "correlation")
+    cor_df$abs_correlation <- abs(cor_df$correlation)
+    
+    unique_components <- data.frame(component=unique(cor_df$component), 
+                                    threshold=threshold)
+    stability_count <- reshape2::acast(cor_df, component~., 
+                                       value.var="abs_correlation",
+                                       subset = plyr::.(abs_correlation > 
+                                                        threshold),
+                                       length)
+    stability_norm <- as.numeric(stability_count)/
+        length(levels(es$cor$comparison))
+    stability_comp <- data.frame(stability=stability_norm,
+                                component=as.numeric(rownames(stability_count)))
+        
+
+    stability_all <- merge(stability_comp, unique_components, by="component",
+                           all.y=TRUE)
+    stability_all$stability[is.na(stability_all$stability)] <- 0
+    return(list(stability=stability_all, corr=cor_df))
+}
+
+#' Compute median correlation of low-dimensional components across subsamples
+#'
+#' Takes the output of \code{\link{estimateStability}} and returns the median
+#' correlation per component for the specified threshold.
+#' @param es output [list] of \code{\link{estimateStability}} with named entries
+#' [1] stability: list with one dataframe per threshold,
+#' where each dataframe contains the stability estimate of the low-dimensional
+#' components for that threshold value, [2] corr: data.frame with correlation of
+#' the low-dimensional components for all pairwise comparisons and components.
+#' @param threshold threshold [double] to mark median correlation as
+#' above/below.
+#' @return Dataframe with median correlation for each component.
+medianCorr <- function(es, threshold) {
+    medians_corr <- stats::aggregate(abs_correlation ~ component, es$corr,
+                                   median)
+    medians_corr$threshold <- 
+        sapply(medians_corr$abs_correlation, function(m) {
             # index of last TRUE
             iT <- length(which(m >= threshold))
             if (iT == 0) return(paste("<", min(threshold),sep=""))
             if (iT != 0) return(threshold[iT])
         })
-    maxcor_long$threshold <- sapply(maxcor_long$component, function(s) {
-        medians_maxcor$threshold[medians_maxcor$component %in% s]
-    })
-
-    pass <- corrPass(formated$maxcor, threshold)
-    colnames(pass) <- threshold
-    rownames(pass) <- rownames(maxcor)
-    pass_long <- reshape2::melt(pass)
-    colnames(pass_long) <- c("comparison", "threshold","componentsPass")
-    medians_pass <- stats::aggregate(componentsPass ~ threshold, pass_long,
-                                     median)
-    return(list(comparison=comparison, maxcor=maxcor, maxcor_long=maxcor_long,
-                medians_maxcor=medians_maxcor, pass=pass, pass_long=pass_long,
-                medians_pass=medians_pass))
-}
-
-#' Format stability
-#'
-#' Takes the output of \code{\link{estimateStability}} and returns stability
-#' estimates per component for the specified threshold.
-#' @param es output [list] of \code{\link{estimateStability}} with named entries
-#'
-#' @param threshold [double]
-#' @return list if dataframe with stability and component variables for each
-#' threshold
-#' @export
-formatStability <- function(es, threshold) {
-    es$maxcor_long$abs_correlation <- abs(es$maxcor_long$correlation)
-    if (!any(es$maxcor_long$abs_correlation > threshold)) {
-        return(NULL)
-    }
-    stability_count <- reshape2::acast(es$maxcor_long,
-                                       component~., 
-                                       value.var="abs_correlation",
-                                       subset = .(abs_correlation > threshold),
-                                       length)
-    stability_norm <- as.numeric(stability_count)/
-        length(levels(es$maxcor_long$comparison))
-    componentCorr <- data.frame(stability=stability_norm,
-                                component=as.numeric(rownames(stability_count)))
-    return(componentCorr)
+    return(medians_corr)
 }
 
 #' Apply compareSetup and format results
 #'
-#' @param data_list [list]
+#' @param data_list [list] output of \code{\link{subsetDimReduction}}. Each list
+#' entry is a matrix with row and column names; row.names are crucial to allow
+#' for the comparison of the lower dimensional embedding across common sample
+#' sets.
 #' @param verbose [logical] If set, progress messages are printed to standard
 #' out
 #'
@@ -190,9 +191,8 @@ formatComparison <- function(comparison_list) {
                     componentxcomponent_r_reordered))
 }
 
-
-
 #' Find intersecting samples between two sets and order according to first
+#' 
 #' @param set1 [M1 x D] matrix with M1 samples and D dimensionality reduced
 #' data P
 #' @param set2 [M2 x D] matrix with M2 samples and D dimensionality reduced
