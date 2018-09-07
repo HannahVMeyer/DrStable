@@ -337,9 +337,8 @@ runEstimateStability <- function() {
     option_list <- list(
         make_option(c("-th", "--threshold"), action="store", dest="threshold",
                     type="double", default=0.95,
-                    help="Threshold for stability; can be single
-                    float between 0 and 1 or comma-separated list of thresholds 
-                    between 0 and 1 [default: %default]."),
+                    help="Threshold for stability between 0 and 1 [default:
+                    %default]."),
         make_option(c("-n", "--nrCV"), action="store", dest="nrCV",
                     default=10, type="integer", help="Number of cross validation
                     sets to generate [default: %default]."),
@@ -361,10 +360,6 @@ runEstimateStability <- function() {
     args <- parse_args(OptionParser(option_list=option_list))
     if (args$verbose) message("Parse command line arguments")
 
-    if (grepl(",", args$threshold)) {
-       args$threshold <- commaList2vector(args$threshold, "numeric")
-    }
-
     dr  <- lapply(1:args$nrCV, function(cv) {
         filecv <- paste(args$prefix, cv, "_", args$method, args$suffix, sep="")
         if (file.exists(filecv)) {
@@ -376,7 +371,6 @@ runEstimateStability <- function() {
         return(datacv)
     })
     names(dr) <- paste("cv", 1:args$nrCV, sep="")
-
     dr <- rmnulls(dr)
 
     if (length(dr) > 1) {
