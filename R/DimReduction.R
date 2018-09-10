@@ -127,7 +127,7 @@ checkParams <- function(params, method) {
             maxit=200, tol=1e-04, w.init=NULL)
     } else if (method == "LaplacianEigenmap") {
         optionalParams <- list(k='as.integer(2 * log(nrow(DM)))', sym=FALSE,
-            weight=FALSE, p=NULL, norm=TRUE)
+            weight=FALSE, p=NULL, norm=FALSE)
     } else if (method == "LLE") {
         optionalParams <- list(reg=2, ss=FALSE,p= 0.5, id=FALSE, nnk=TRUE,
             eps=1, iLLE=FALSE, v=0.99)
