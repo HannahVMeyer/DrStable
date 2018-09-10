@@ -5,9 +5,10 @@
 \title{Wrapper function for dimensionality reduction methods}
 \usage{
 methodsDimReduction(Y, ndim, distY = dist(Y, method = dist.method),
-  dist.method = "euclidean", method = c("DiffusionMap", "DRR", "ICA", "LLE",
-  "Isomap", "LaplacianEigenmap", "MDS", "PCA", "kPCA", "nMDS", "tSNE", "PEER",
-  "UMAP"), optN = NULL, verbose = FALSE, params = NULL)
+  dist.method = "euclidean", method = c("DiffusionMap", "DRR", "ICA",
+  "LLE", "Isomap", "LaplacianEigenmap", "MDS", "PCA", "kPCA", "nMDS",
+  "tSNE", "PEER", "UMAP"), optN = NULL, verbose = FALSE,
+  params = NULL)
 }
 \arguments{
 \item{Y}{[N x P] data matrix for which the dimensionality of P should be

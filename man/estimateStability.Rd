@@ -13,8 +13,8 @@ subsets of the same dataset. Each list entry is a matrix with row and column
 names; row.names are crucial to allow for the comparison of the lower
 dimensional embedding across common sample sets.}
 
-\item{threshold}{[double] Threshold for stability; can be single double
-between 0 and 1 or vector of thresholds between 0 and 1.}
+\item{threshold}{[double] Threshold for stability between 0 and 1 or vector 
+of thresholds between 0 and 1.}
 
 \item{verbose}{[logical] If set, progress messages are printed to standard
 out}

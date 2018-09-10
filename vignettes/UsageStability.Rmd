@@ -27,11 +27,10 @@ library(ggplot2)
 ```{r data simulation, cache=TRUE}
 alpha <- c(0, 0.3, 0.5, 0.7, 1)
 Y <- lapply(alpha, function(a) {
-    simulation <- PhenotypeSimulator::runSimulation(N = 1000, P = 50, tNrSNP = 10000, 
-                           SNPfrequencies = c(0.05, 0.1,0.3,0.4), genVar = 0.4,
-                           h2s=0.05, h2bg = 0.95, phi = 0.6, seed=a*10,
-                           delta=0.4, nonlinear="exp", 
-                           proportionNonlinear=a)
+    simulation <- PhenotypeSimulator::runSimulation(N=1000, P=50,
+                           tNrSNP=10000, SNPfrequencies=c(0.05, 0.1,0.3,0.4),
+                           genVar=0.4, h2s=0.05, h2bg=0.95, phi=0.6, seed=a*10,
+                           delta=0.4, nonlinear="exp", proportionNonlinear=a)
     if (a == 0) return(simulation$phenoComponentsFinal$Y)
     if (a != 0) return(simulation$phenoComponentsFinal$Y_transformed)
 })
@@ -44,14 +43,14 @@ names(Y) <- paste("nonlinear", alpha, sep="")
 methods <- c( "PCA", "LLE", "LaplacianEigenmap", "ICA")
 dr <- lapply(Y, function(y) {
     tmp <- lapply(methods, function(m) {
-        subsetDimReduction(Y=y, seed=2+10*alpha, method=m, verbose=TRUE, 
-                           nrSubsets = 10, ndim=25)
+        subsetDimReduction(Y=y, seed=2+10*alpha, method=m, verbose=TRUE,
+                           nrSubsets=10, ndim=25)
     })
     names(tmp) <- methods
     return(tmp)
 })
 saveRDS(dr, "dimReddata.rds")
-    ```
+```
 
 # 3. Find stable components
 
@@ -75,15 +74,14 @@ saveRDS(stability, "stability.rds")
 ```
 
 # 4. Plot stability
-```{r plot stability, fig.show='hold'}
+```{r plot stability}
 p <- ggplot(stability, aes(x=as.factor(component), y=stability,
                                  fill=as.factor(alpha)))
-p + geom_bar(stat = 'identity', position="dodge") +
+p + geom_bar(stat='identity', position="dodge") +
     facet_grid(as.factor(alpha) ~ methods) +
     scale_fill_manual(
         values=c('#c7e9b4','#7fcdbb','#41b6c4','#1d91c0','#225ea8'),
         name="non-linearity") +
-    #ylim(c(0.5,1)) +
     ylab("Stability") +
     xlab("Low dimensional components") +
     theme_bw()

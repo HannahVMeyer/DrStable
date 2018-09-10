@@ -13,6 +13,13 @@ It reads the dimensionality reduction results from the cross-validation (
 Rscript -e "Stability::runDimReduction()") and analyses the stability of
 the low-dimensional embedding via \code{\link{estimateStability}}. For
 details on \code{\link{estimateStability}} please refer to the help pages.
+The results of the analysis are written to 1) [output]/[method]_stability.csv
+which contains the stability estimate of the low-dimensional components for
+the specified [threshold] value and to 2) [output]/[method]_correlationCV.csv
+which contains the correlation of the low-dimensional components for all
+pairwise comparisons and components.
+}
+\details{
 For help on the command line arguments that can be passed, see examples
 below. From the command line, the help function can be called via
 Rscript -e "Stability::runEstimateStability()" --args --help
