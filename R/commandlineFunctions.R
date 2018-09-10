@@ -52,47 +52,9 @@ runCreateSubsets <- function() {
     args <- parse_args(OptionParser(option_list=option_list))
     if (args$verbose) message("Parse command line arguments")
 
-    # phenotype: N x P matrix
-    if (!grepl("csv", args$highdimfile)) {
-        stop("High-dimensional data files is not .csv")
-    }
-    if (args$verbose) {
-        message("Read high-dimensional dataset from ", args$highdimfile)
-    }
-    Y <-  data.table::fread(args$highdimfile, sep=",", header=TRUE,
-                            stringsAsFactors=FALSE, data.table=FALSE)
-    rownames(Y) <- Y[,1]
-    Y <- as.matrix(Y[,-1])
+    Y <- prepInput(args)
 
-    if(!is.numeric(Y)) {
-        stop("High-dimensional dataset contains at least one non-numeric entry")
-    }
-
-    # potential covariates
-    if (!is.null(args$covariatefile)) {
-        # N x C matrix
-        if (!grepl("csv", args$covariatefile)) {
-            stop("Covariates files is not .csv")
-        }
-        if (args$verbose) {
-            message("Read covariates from ", args$covariatefile)
-        }
-        covs <- data.table::fread(args$covariatefile, sep=",", header=TRUE,
-                                  stringsAsFactors=FALSE, data.table=FALSE)
-        rownames(covs) <- covs[,1]
-        covs <- as.matrix(covs[,-1])
-
-        if(!is.numeric(covs)) {
-            stop("Covariates contain at least one non-numeric entry")
-        }
-        if (!all(rownames(covs) == rownames(Y))) {
-            stop("Rownames of highdim file and covariate file differ")
-        }
-        if (args$verbose) message("Regress covariates...")
-        Y <- lm(Y ~ covs)$residuals
-    }
-
-    if (args$verbose) message("Set seed to ", args$seed)
+   if (args$verbose) message("Set seed to ", args$seed)
     set.seed(args$seed)
     sample_matrix <- sapply(1:args$nrCV, function(x) {
         sample(nrow(Y), args$sizeCV * nrow(Y))
@@ -101,7 +63,7 @@ runCreateSubsets <- function() {
         message("Save cross-validation datasets to ",
                 gsub(".csv", "", args$highdimfile), "_cv...")
     }
-    dr <- lapply(1:ncol(sample_matrix), function(x){
+    cv <- lapply(1:ncol(sample_matrix), function(x){
             y_cv <- Y[sample_matrix[,x],]
             cvfile <- paste(gsub(".csv", "", args$highdimfile), "_cv", x, ".csv",
                             sep="")
@@ -223,6 +185,181 @@ runDimensionalityReduction <- function() {
         args$params <- lapply(params.tmp, function(x) x[[2]])
         names(args$params) <-  sapply(params.tmp, function(x) x[[1]])
     }
+    Y <- prepInput(args)
+    dr  <- wrapDR(Y, args)
+}
+
+
+#' Command line execution for Stability
+#'
+#' runEstimateStability runs without arguments. Upon call, it reads command-line
+#' parameters and supplies these to \code{\link{estimateStability}}.
+#' It reads the dimensionality reduction results from the cross-validation (
+#' Rscript -e "Stability::runDimReduction()") and analyses the stability of
+#' the low-dimensional embedding via \code{\link{estimateStability}}. For
+#' details on \code{\link{estimateStability}} please refer to the help pages.
+#' The results of the analysis are written to 1) [output]/[method]_stability.csv
+#' which contains the stability estimate of the low-dimensional components for
+#' the specified [threshold] value and to 2) [output]/[method]_correlationCV.csv
+#' which contains the correlation of the low-dimensional components for all
+#' pairwise comparisons and components.
+#'
+#' For help on the command line arguments that can be passed, see examples
+#' below. From the command line, the help function can be called via
+#' Rscript -e "Stability::runEstimateStability()" --args --help
+#'
+#' @export
+#'
+#' @examples
+#' # (not run)
+#' # Rscript -e "Stability::runEstimateStability()" \
+#' #--args \
+#' #--highdim=/path/to/highdimfile \
+#' #--cov=/path/to/optional/covariatefile \
+#' #--seed=234 \
+#' #--nrCV=10 \
+#' #--neighbours=8 \
+#' #--method=DRR \
+#' #--name=Dimreduction_highdimfile \
+#' #--outdir=/tmp \
+#' #--showProgress \
+
+runEstimateStability <- function() {
+    option_list <- list(
+        make_option(c("-hd", "--highdim"), action="store", dest="highdimfile",
+                    type="character", help="Path to comma-separated input file
+                    with N samples (rows) and P traits (columns). Subsetting
+                    occurs along rows, creating [M x P] subsets of the original
+                    [N x P] dataset [default: %default]."),
+        make_option(c("-c", "--cov"), action="store", dest="covariatefile",
+                    type="character", default=NULL,
+                    help="Path to (optional) comma-separated covariate file
+                    with N samples (rows) and C covariates (columns). [default:
+                    %default]."),
+        make_option(c("--seed"), action="store", dest="seed", default=234,
+                    type="integer", help="Seed to initialise random number
+                    generator [default: %default]."),
+        make_option(c("-n", "--nrCV"), action="store", dest="nrCV",
+                    default=10, type="integer", help="Number of cross validation
+                    sets to generate [default: %default]."),
+        make_option(c("-s", "--sizeCV"), action="store", dest="sizeCV",
+                    default=0.8, type="double", help="Proportion of samples in
+                    cross validation data sets [default: %default]."),
+        make_option(c("-dim", "--dimensions"), action="store", dest="dim",
+                    default=NULL, type="integer", help="Maximum dimensionality
+                    [int] to retain in the data; large values can cause long
+                    computation times; if not provided max(P,N) is chosen
+                    [default: %default]."),
+        make_option(c("--neighbours"), action="store", dest="optN",
+                    default=NULL, type="integer", help="Number of neighbours
+                    considered for dimensionality reduction; input for LLE,
+                    LLE, LaplacianEigenmaps, Isomap, tSNE; if not provided,
+                    will be estimated via lle::calc_k. For details see
+                    'computeDimReduction' function [default: %default]."),
+        make_option(c("--kmax"), action="store", dest="kmax",
+                    default=40, type="integer", help="if neighbours is not
+                    provided, kmax [int] specifies the maximum number of
+                    neighbours supplied to lle::calc_k [default: %default]."),
+        make_option(c("--kmin"), action="store", dest="kmin",
+                    default=1, type="integer", help="if neighbours is not
+                    provided, kmin [int] specifies the minimum number of
+                    neighbours supplied to lle::calc_k [default: %default]."),
+        make_option(c("-m", "--method"), action="store", dest="method",
+                    type="character", default=NULL,
+                    help="Dimensionality reduction method to apply
+                    [default: %default]."),
+        make_option(c("--name"), action="store", dest="name",
+                    type="character", default=NULL, help="Name of output file
+                    [default: %default]."),
+        make_option(c("-o", "--outdir"), action="store", dest="outdir",
+                    type="character", default=NULL,
+                    help="Full path/to/directory [string] where results will be
+                    saved. Full file name will be created by
+                    outdir/name_method.csv. Alternatively, prefix can be
+                    provided to create file prefix_method.csv [default:
+                    %default]."),
+        make_option(c("--dimRedParams"), action="store", dest="dimRedParams",
+                    type="character", default=NULL, help="Additional, optional
+                    parameters to be passed to the specified dimenssionality
+                    reduction method. For details refer to checkParams and their
+                    manual. Provided as comma separated list eg.
+                    fun=logcosh,maxit=500 for function ICA.
+                    [default: %default]."),
+        make_option(c("-th", "--threshold"), action="store", dest="threshold",
+                    type="double", default=0.95,
+                    help="Threshold for stability between 0 and 1 [default:
+                    %default]."),
+        make_option(c("--prefixCV"), action="store", dest="prefixCV",
+                    type="character",
+                    help="/Full/path/to/crossvalidatefile/prefix [default:
+                    %default]."),
+        make_option(c("--suffixCV"), action="store", dest="suffixCV",
+                    type="character", help="Crossvalidatefile suffix [default:
+                    %default].", default="_reducedY.csv"),
+        make_option(c("--showProgress"), action="store_true", dest="verbose",
+                    default=FALSE, type="logical", help="If set, progress
+                    messages about simulation steps are printed to standard out
+                    [default: %default]."))
+
+    args <- parse_args(OptionParser(option_list=option_list))
+    if (args$verbose) message("Parse command line arguments")
+
+    if (is.null(args$highdim) && is.null(args$prefixCV)) {
+        stop("Neither prefix to pre-computed dimensionality reduction results on
+            subsets nor path to high-dimensional dataset for dimmensionality
+            reduction are provided")
+    }
+    if (!is.null(args$highdim) && !is.null(args$prefixCV)) {
+        stop("Both prefix to pre-computed dimensionality reduction results on
+            subsets and path to high-dimensional dataset for dimmensionality
+            reduction are provided, only one can be used.")
+    }
+    if (!is.null(args$highdim)) {
+        args$crossvalidate <- TRUE
+        args$estimateStability <- TRUE
+        Y <- prepInput(args)
+        dr  <- wrapDR(Y, args)
+    } else {
+        dr  <- lapply(1:args$nrCV, function(cv) {
+            filecv <- paste(args$prefixCV, cv, "_", args$method, args$suffixCV,
+                            sep="")
+            if (file.exists(filecv)) {
+                datacv <- t(as.matrix(read.csv(filecv, sep=",", header=TRUE,
+                                               row.names=1)))
+            } else {
+                datacv <- NULL
+            }
+            return(datacv)
+        })
+    }
+    names(dr) <- paste("cv", 1:args$nrCV, sep="")
+    dr <- rmnulls(dr)
+
+    if (length(dr) > 1) {
+        if (args$verbose) message("Determine stability of ", args$method)
+        results <- estimateStability(dr, threshold=args$threshold)
+        write.table(results$stability, paste(orgs$outdir, "/", method,
+            "_stability.csv", sep=""), sep=",", col.names=TRUE, row.names=FALSE,
+            quote=FALSE)
+        write.table(results$corr, paste(orgs$outdir, "/", method,
+            "_correlationCV.csv", sep=""), sep=",", col.names=TRUE,
+            row.names=FALSE, quote=FALSE)
+    } else {
+        cat("Not enough datasets (#", length(dr), ") to estimate stability")
+    }
+}
+
+# helper functions
+
+#' Prepare input files
+#'
+#' Prepare input files for runEstimateStability, createSubsets and
+#' runDimReduction. Check if files exist, read, format and -if provided-regress
+#' covariates from highdim file.
+#'
+#' @param args [list] of command line arguments
+#' @return formated high-dimensional dataset matrix
+prepInput  <- function(args) {
     # phenotype: N x P matrix
     if (!grepl("csv", args$highdimfile)) {
         stop("High-dimensional data files is not .csv")
@@ -254,7 +391,7 @@ runDimensionalityReduction <- function() {
         covs <- as.matrix(covs[,-1])
 
         if(!is.numeric(covs)) {
-            stop("Covarariates contain at least one non-numeric entry")
+            stop("Covariates contain at least one non-numeric entry")
         }
         if (!all(rownames(covs) == rownames(Y))) {
             stop("Rownames of highdim file and covariate file differ")
@@ -262,7 +399,19 @@ runDimensionalityReduction <- function() {
         if (args$verbose) message("Regress covariates...")
         Y <- lm(Y ~ covs)$residuals
     }
+    return(Y)
+}
 
+#' Wrap dimensionality reduction functions
+#'
+#' Provide wrapper for dimensionality reduction functions in
+#' runEstimateStability and runDimReduction. Check which analysis mode, run
+#' dimensionality reduction and save output files.#' covariates from highdim file.
+#'
+#' @param Y [matrix] of high-dimensional dataset
+#' @param args [list] of command line arguments
+#' €return list with dimensionality reduction results
+wrapDR <- function(Y, args) {
     if (args$crossvalidate) {
         if (args$verbose) message("Set seed to ", args$seed)
         set.seed(args$seed)
@@ -279,7 +428,7 @@ runDimensionalityReduction <- function() {
                             ".csv", sep="")
             write.table(y_cv, cvfile, quote=FALSE, row.names=TRUE, col.names=NA,
                           sep=",")
-            output_cv <- paste(args$outdir, "/CV", x, "_", sep="")
+
             if (verbose) {
                 message("Dimensionality reduction for crossvalidation:", x)
             }
@@ -289,8 +438,13 @@ runDimensionalityReduction <- function() {
                                       kmin=args$kmin, kmax=args$kmax,
                                       is.list.ellipsis=TRUE,
                                       params=args$params)
+
+            if (args$estimateStability) {
+                args$prefix <- paste(args$outdir, "/CV", x, "_", sep="")
+            }
             saveDimReduction(results=dr, prefix=args$prefix, outdir=args$outdir,
                              name=args$name, method=args$method)
+           return(dr)
         })
     } else {
         dr <- computeDimReduction(m=args$method, Y=Y,
@@ -302,82 +456,7 @@ runDimensionalityReduction <- function() {
         saveDimReduction(results=dr, prefix=args$prefix, outdir=args$outdir,
                          name=args$name, method=args$method)
     }
+    return(dr)
 }
 
 
-#' Command line execution for Stability
-#'
-#' runEstimateStability runs without arguments. Upon call, it reads command-line
-#' parameters and supplies these to \code{\link{estimateStability}}.
-#' It reads the dimensionality reduction results from the cross-validation (
-#' Rscript -e "Stability::runDimReduction()") and analyses the stability of
-#' the low-dimensional embedding via \code{\link{estimateStability}}. For
-#' details on \code{\link{estimateStability}} please refer to the help pages.
-#' For help on the command line arguments that can be passed, see examples
-#' below. From the command line, the help function can be called via
-#' Rscript -e "Stability::runEstimateStability()" --args --help
-#'
-#' @export
-#'
-#' @examples
-#' # (not run)
-#' # Rscript -e "Stability::runEstimateStability()" \
-#' #--args \
-#' #--highdim=/path/to/highdimfile \
-#' #--cov=/path/to/optional/covariatefile \
-#' #--seed=234 \
-#' #--nrCV=10 \
-#' #--neighbours=8 \
-#' #--method=DRR \
-#' #--name=Dimreduction_highdimfile \
-#' #--outdir=/tmp \
-#' #--showProgress \
-
-runEstimateStability <- function() {
-    option_list <- list(
-        make_option(c("-th", "--threshold"), action="store", dest="threshold",
-                    type="double", default=0.95,
-                    help="Threshold for stability between 0 and 1 [default:
-                    %default]."),
-        make_option(c("-n", "--nrCV"), action="store", dest="nrCV",
-                    default=10, type="integer", help="Number of cross validation
-                    sets to generate [default: %default]."),
-        make_option(c("-m", "--method"), action="store", dest="method",
-                    type="character", default=NULL,
-                    help="Method applied for dimensionality reduction
-                    [default: %default]."),
-        make_option(c("--prefix"), action="store", dest="prefix",
-                    type="character", help="/Full/path/to/Outputfile/prefix
-                    [default: %default]."),
-        make_option(c("--suffix"), action="store", dest="suffix",
-                    type="character", help="Outputfile suffix [default:
-                    %default].", default="_reducedY.csv"),
-        make_option(c("--showProgress"), action="store_true", dest="verbose",
-                    default=FALSE, type="logical", help="If set, progress
-                    messages about simulation steps are printed to standard out
-                    [default: %default]."))
-
-    args <- parse_args(OptionParser(option_list=option_list))
-    if (args$verbose) message("Parse command line arguments")
-
-    dr  <- lapply(1:args$nrCV, function(cv) {
-        filecv <- paste(args$prefix, cv, "_", args$method, args$suffix, sep="")
-        if (file.exists(filecv)) {
-            datacv <- t(as.matrix(read.csv(filecv, sep=",", header=TRUE,
-                                           row.names=1)))
-        } else {
-            datacv <- NULL
-        }
-        return(datacv)
-    })
-    names(dr) <- paste("cv", 1:args$nrCV, sep="")
-    dr <- rmnulls(dr)
-
-    if (length(dr) > 1) {
-        if (args$verbose) message("Determine robustness of ", args$method)
-        results <- estimateStability(dr, threshold=args$threshold)
-        saveRDS(results, paste(output, "/", method, "_robustness.rds", sep=""))
-    } else {
-        cat("Not enough datasets (#", length(dr), ") to compute robustness")
-    }
-}

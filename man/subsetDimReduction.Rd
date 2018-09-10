@@ -4,9 +4,9 @@
 \alias{subsetDimReduction}
 \title{Compute dimensionality reduction for subsets of the input data}
 \usage{
-subsetDimReduction(Y, seed, method, size = 0.8, nrSubsets = 10,
+subsetDimReduction(Y, seed, size = 0.8, nrSubsets = 10, method,
   optN = NULL, ndim = NULL, kmin = 1, kmax = 40, verbose = FALSE,
-  parallel = FALSE)
+  parallel = FALSE, is.list.ellipsis = FALSE, ...)
 }
 \arguments{
 \item{Y}{[N x P] data matrix for which the dimensionality of P should be
@@ -15,15 +15,15 @@ reduced,}
 \item{seed}{[int] seed to initialise random number generator for drawing
 subsets of Y.}
 
-\item{method}{dimensionality reduction method [string] to be applied; one of
-DiffusionMap, DRR, ICA, LLE, Isomap, LaplacianEigenmap, MDS, PCA, kPCA,
-nMDS, tSNE and PEER.}
-
 \item{size}{[float] proportion of samples from total number of samples to
 to choose for each subset.}
 
 \item{nrSubsets}{[int] number of subsets to generate and apply dimensionality
 reduction to.}
+
+\item{method}{dimensionality reduction method [string] to be applied; one of
+DiffusionMap, DRR, ICA, LLE, Isomap, LaplacianEigenmap, MDS, PCA, kPCA,
+nMDS, tSNE and PEER.}
 
 \item{optN}{optimal number [int] of neighbours to consider for dimensionality
 reduction; relevant for methods LLE, LaplacianEigenmaps, Isomap and tSNE. If
@@ -43,6 +43,9 @@ out.}
 
 \item{parallel}{if optN is not provided and parallel TRUE, parallel
 computation on multiple cpu cores is used with \code{\link{lle::calc_k}}.}
+
+\item{is.list.ellipsis}{[logical] if ... arguments are provided as list, set
+TRUE.}
 }
 \value{
 list of size nrSubsets, containing at each entry a named list of

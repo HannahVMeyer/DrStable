@@ -65,7 +65,7 @@ computeDimReduction <-  function(Y, method, optN=NULL, ndim=NULL,
         stop("ndim has to less than or equal to original column dimension")
     }
 
-    if (is.null(optN) && any(method %in% c("LLE", "LaplacianEigenmaps",
+    if (is.null(optN) && any(method %in% c("LLE", "LaplacianEigenmap",
                                            "Isomap", "tSNE"))) {
         vmessage(c("Estimating number of neighbours for", method),
                  verbose=verbose)
@@ -216,22 +216,22 @@ methodsDimReduction <- function(Y, ndim, distY=dist(Y, method=dist.method),
 
     usedParams <- checkParams(params=params, method=method)
 
-    if (is.null(optN) && any(method %in% c("LLE", "LaplacianEigenmaps",
+    if (is.null(optN) && any(method %in% c("LLE", "LaplacianEigenmap",
                                            "Isomap", "tSNE"))) {
         if (method == "tSNE" && !is.null(usedParams$perplexity)) {
             optN <- usedParams$perplexity
         } else {
-            stop("For", method, ", optN or perplexity have to specified")
+            stop("For ", method, ", optN or perplexity have to specified")
         }
         if (method == "LLE" && !is.null(usedParams$k)) {
             optN <- usedParams$k
         } else {
-            stop("For", method, ", optN or k have to specified")
+            stop("For" , method, ", optN or k have to specified")
         }
         if (method == "LaplacianEigenmaps" && !is.null(usedParams$k)) {
             optN <- usedParams$k
         } else {
-            stop("For", method, ", either optN or k have to specified")
+            stop("For ", method, ", either optN or k have to specified")
         }
         if (method == "Isomap") {
             if (!is.null(usedParams$k)) {
@@ -239,7 +239,7 @@ methodsDimReduction <- function(Y, ndim, distY=dist(Y, method=dist.method),
             } else if (!is.null(usedParams$epsilon)) {
                 optN <- NULL
             } else {
-                stop("For", method, ", either optN, k, or epsilon have to",
+                stop("For ", method, ", either optN, k, or epsilon have to",
                      " specified")
             }
         }
@@ -391,6 +391,8 @@ methodsDimReduction <- function(Y, ndim, distY=dist(Y, method=dist.method),
 #' computation on multiple cpu cores is used with \code{\link{lle::calc_k}}.
 #' @param verbose [logical] If set, progress messages are printed to standard
 #' out.
+#' @param is.list.ellipsis [logical] if ... arguments are provided as list, set
+#' TRUE.
 #' @return list of size nrSubsets, containing at each entry a named list of
 #' results from \link{\code{computeDimReduction}}:
 #' Y_red:  named list with dimensionality reduced phenotypes (reducedY) and
