@@ -40,7 +40,7 @@ estimateStability <- function(dr, threshold, verbose=FALSE) {
                                                         threshold),
                                        length)
     stability_norm <- as.numeric(stability_count)/
-        length(levels(es$cor$comparison))
+        length(levels(cor_df$comparison))
     stability_comp <- data.frame(stability=stability_norm,
                                 component=as.numeric(rownames(stability_count)))
         
