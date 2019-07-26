@@ -1,4 +1,4 @@
-# Stability
+# DrStable
 
 For a high-dimensional dataset 𝐗 with 𝑁 samples and 𝑃 dimensions (traits), 
 dimensionality reduction techniques aim:
@@ -17,6 +17,6 @@ The current github version of *Stability* is: 0.1.1 and can be
 installed via
 ```bash
 library(devtools)
-install_github("HannahVMeyer/Stability")
+install_github("HannahVMeyer/DrStable")
 ```
 
