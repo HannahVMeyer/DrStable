@@ -1,11 +1,28 @@
-Package: Stability
-Title: What the Package Does (one line, title case)
+Package: drStable
+Title: Estimating the stability of dimensionality reduction results
 Version: 0.0.1
-Authors: person("Hannah", "Meyer", email = "hannah@ebi.ac.uk",
+Authors@R:
+    person("Hannah", "Meyer", email = "hannah.v.meyer@gmail.com",
     role = c("aut", "cre"))
-Description:
+URL: https://github.com/HannahVMeyer/drStable
+BugReports: https://github.com/HannahVMeyer/drStable/issues
+Description: The analysis of high-dimensional datasets often requires to extract
+    meaningful variables from the data or compress the data into a more
+    tractable number of features. In technical terms, for a high-dimensional
+    dataset X with N samples and P dimensions (traits), dimensionality reduction
+    techniques aim: i) to provide a meaningful low-dimensional representation Z
+    of K dimensions while only losing minor amounts of information, ii) to use
+    only a small number of free parameters, iii) to preserve the quantities of
+    interest in the data. There are a variety of approaches for dimensionality
+    reduction with different underlying mathematical concepts and parameters.
+    This package provides a simple function to access 13 dimensionality
+    reduction methods (DiffusionMap, DRR, ICA, LLE, Isomap, LaplacianEigenmap,
+    MDS, PCA, kPCA, nMDS, tSNE, UMAP and PEER). It introduces a new stability
+    criterion, which identifies the lower dimensional componet Z that can
+    reliably be found in cross-validation on different subsets of M samples and
+    P traits. 
 Depends:
-    R (>= 3.4.0)
+    R (>= 3.5.0)
 Imports:
     diffusionMap (>= 1.1.0),
     DRR (>= 0.0.3),
@@ -21,11 +38,18 @@ Imports:
     RSpectra (>= 0.13.1),
     Hmisc (>= 4.1.1),
     ggplot2 (>= 2.2.1),
-    umap (>= 0.2.0)
+    umap (>= 0.2.0),
+    utils,
+    optparse,
+    data.table (>= 1.11.0),
+    dplyr,
+    plyr,
+    PhenotypeSimulator
 Suggests:
     testthat,
     knitr,
-    rmarkdown
+    rmarkdown,
+    peer
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
