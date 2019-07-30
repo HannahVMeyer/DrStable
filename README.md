@@ -1,22 +1,51 @@
-# Stability
 
-For a high-dimensional dataset 𝐗 with 𝑁 samples and 𝑃 dimensions (traits), 
-dimensionality reduction techniques aim:
-1. to provide a meaningful low-dimensional representation 𝐙 of 𝐾 dimensions while only losing minor amounts of information,
-1. to use only a small number of free parameters
-1. to preserve the quantities of interest in the data. 
+<!-- README.md is generated from README.Rmd. Please edit that file -->
 
-There are a variety of approaches for dimensionality reduction with different underlying mathematical concepts and parameters
-and choosing the most appropriate method for a given dataset is not trivial. Fundamentally, the problem is finding an 
-objective criterion of what a good dimensionality reduction method is.
+[![Build
+Status](https://travis-ci.org/HannahVMeyer/drStable.svg?branch=master)](https://travis-ci.org/HannahVMeyer/drStable)
+[![License:
+MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Here, I define a stability criterion that measures the number of components that can be reliably recovered 
-in cross-validation and thus helps to determine the stable dimensions of the low-dimensional space.
+## <i class="fa fa-map" aria-hidden="true"></i> drStable
 
-The current github version of *Stability* is: 0.1.1 and can be
-installed via
-```bash
+The analysis of high-dimensional datasets often requires extracting
+meaningful variables from the data or compress the data into a more
+tractable number of features. Feature extraction can be achieved by
+using dimensionality methods.
+
+**drStable** provides an interface for easy access to 13 different
+dimensionality reduction methods: DiffusionMap, DRR, ICA, LLE, Isomap,
+LaplacianEigenmap, MDS, PCA, kPCA, nMDS, tSNE, UMAP and PEER.
+
+**drStable** introduces a novel stability criterion which provides the
+user with a tool of estimating the number of low-dimensional features
+that can be reliably recovered and thus determine the stable dimensions
+of the low-dimensional space.
+
+Full documentation is available at
+<http://HannahVMeyer.github.io/drStable/>.
+
+**drStable** will be useful in any application that requires the
+selection of a low-dimensional feature representation of the original
+data. For instance, in the filed of genetic association studies, these
+features can be used as the response variable to find genetic variants
+associated with the low-dimensional phenotype representation. Stable
+features for association testing harbor two advantages: they increase
+the power for genetic discovery and guarantee reliable association
+results.
+
+## <i class="fa fa-rocket" aria-hidden="true"></i> Installation
+
+Currently, **drStable** is available in alpha-version via:
+
+``` r
 library(devtools)
-install_github("HannahVMeyer/Stability")
+install_github("HannahVMeyer/drStable")
 ```
 
+We are working on the release of a stable version of the package,
+including improving test coverage, extension of the documentation and
+use-case vignettes.
+
+A log of version changes can be found
+[here](https://github.com/HannahVMeyer/drStable/blob/master/NEWS.md).
