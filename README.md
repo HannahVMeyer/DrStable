@@ -6,7 +6,7 @@ Status](https://travis-ci.org/HannahVMeyer/drStable.svg?branch=master)](https://
 [![License:
 MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## <i class="fa fa-map" aria-hidden="true"></i> drStable
+## <i class="fas fa-shapes" aria-hidden="true"></i> drStable
 
 The analysis of high-dimensional datasets often requires extracting
 meaningful variables from the data or compress the data into a more
