@@ -2,26 +2,30 @@
 #'
 #' Compute low-dimensional representation of dataset.
 #'
-#' @param Y [N x P] data matrix for which the dimensionality of P should be
+#' @param Y \[N x P\] data matrix for which the dimensionality of P should be
 #' reduced
-#' @param method Dimensionality reduction method [string] to be applied; one of
-#' DiffusionsMaps, DRR, ICA, LLE, Isomap, LaplacianEigenmap, MDS, PCA, kPCA,
-#' nMDS, tSNE, UMAP and PEER
-#' @param optN optimal number [int] of neighbours to consider for dimensionality
-#' reduction; relevant for methods LLE, LaplacianEigenmaps, Isomap and tSNE. If
-#' not provided, will be estimated via \code{\link{lle::calc_k}}.
-#' @param ndim maximum dimensionality [int] to retain in the data; large values
-#' can cause long computation times; if not provided max(P,N) is chosen.
-#' @param kmin if optN is not provided, kmin [int] specifies the minimum number
-#' of neighbours supplied to  \code{\link{lle::calc_k}}
-#' @param kmax if optN is not provided, kmax [int] specifies the maximum number
-#' of neighbours supplied to  \code{\link{lle::calc_k}}
-#' @param parallel if optN is not provided and parallel TRUE, parallel
-#' computation on multiple cpu cores is used with \code{\link{lle::calc_k}}
+#' @param method Dimensionality reduction method [character] to be applied; one
+#' of DiffusionsMaps, DRR, ICA, LLE, Isomap, LaplacianEigenmap, MDS, PCA, kPCA,
+#' nMDS, tSNE and UMAP.
+#' @param optN optimal number [integer] of neighbours to consider for
+#' dimensionality reduction; relevant for methods LLE, LaplacianEigenmaps,
+#' Isomap and tSNE. If not provided, will be estimated via
+#' \code{\link[lle]{calc_k}}.
+#' @param ndim maximum dimensionality [integer] to retain in the data; large
+#' values can cause long computation times; if not provided max(P,N) is chosen.
+#' @param kmin if optN is not provided, kmin [integer] specifies the minimum
+#' number of neighbours supplied to  \code{\link[lle]{calc_k}}.
+#' @param kmax if optN is not provided, kmax [integer] specifies the maximum
+#' number of neighbours supplied to  \code{\link[lle]{calc_k}}.
+#' @param parallel [logical] if optN is not provided and parallel TRUE, parallel
+#' computation on multiple cpu cores is used with \code{\link[lle]{calc_k}}.
 #' @param verbose [logical] If set, progress messages are printed to standard
-#' out
+#' out.
 #' @param is.list.ellipsis [logical] if ... arguments are provided as list, set
 #' TRUE.
+#' @param ... Additional arguments passed to dimensionality reduction methods.
+#' For possible arguments, check function decomentation. See details for 
+#' relevant packages and functions.
 #' @return named list of results from dimensionality reduction:
 #' Y_red:  named list with dimensionality reduced phenotypes (reducedY) and
 #' object returned by specified dimensionality reduction method (results) with
@@ -103,15 +107,33 @@ computeDimReduction <-  function(Y, method, optN=NULL, ndim=NULL,
 #'
 #' @param params [list] of parameters to check; list names must be identical
 #' to argument names of chosen dimensionality reduction method.
-#' @param method Dimensionality reduction method [string] to be applied; one of
-#' DiffusionMap, DRR, ICA, LLE, Isomap, LaplacianEigenmap, MDS, PCA, kPCA,
-#' nMDS, tSNE, UMAP and PEER
+#' @param method Dimensionality reduction method [character] to be applied; one
+#' of DiffusionMap, DRR, ICA, LLE, Isomap, LaplacianEigenmap, MDS, PCA, kPCA,
+#' nMDS, tSNE and UMAP.
 #' @export
 #' @return named list with default and specified parameters taken by specified
 #' dimensionality reduction method
 #' @examples
 #' params_DRR <- checkParams(list(cv.folds=10), method="DRR")
 #' params_ICA <- checkParams(list(fun="logcosh", maxit=500), method="ICA")
+#' @details checkParams checks if specified parameters are valid parameters of
+#' the underlying dimensionality reduction methods. A list of the methods is
+#' provided below:
+#' * Diffusion Map: \code{\link[diffusionMap]{diffuse}}
+#' * Dimensionality reduction by regression (DRR): \code{\link[DRR]{drr}}
+#' * Independent component analysis (ICA): \code{\link[fastICA]{fastICA}}
+#' * Local liner embedding (LLE): \code{\link[lle]{lle}}
+#' * Isomap: \code{\link[vegan]{isomap}}
+#' * Laplacian Eigenmap: \code{\link[loe]{spec.emb}} and
+#'   \code{\link[loe]{make.kNNG}}
+#' * Multi-dimensional scaling (MDS) : \code{\link[stats]{cmdscale}}
+#' * Principal component analysis (PCA): \code{\link[stats]{prcomp}}
+#' * Kernel PCA (kPCA): \code{\link[kernlab]{kpca}}
+#' * non-metrix MDS (nMDS): \code{\link[vegan]{metaMDS}}
+#' * t- stochastic neighbourhood embedding (tSNE): \code{\link[Rtsne]{Rtsne}}
+#' * Uniform manifold approximation and projection (umap):
+#'    \code{\link[umap]{umap}}
+#' @md
 checkParams <- function(params, method) {
     if (method == "DiffusionMap") {
         optionalParams <- list(eps.val="epsilonCompute(D)", neigen=NULL, t=0,
@@ -158,7 +180,8 @@ checkParams <- function(params, method) {
     } else {
          stop("Method: ", method, " does not exist, possible methods are: ",
              "DiffusionMap, DRR, ICA, LLE, Isomap, LaplacianEigenmap, MDS,",
-             "PCA,", "kPCA, nMDS, tSNE, UMAP and PEER")
+             "PCA,", "kPCA, nMDS, tSNE and UMAP")
+            # "PCA,", "kPCA, nMDS, tSNE, UMAP and PEER")
     }
     if (!is.null(params)) {
         params <-  ifelse(params=="TRUE", TRUE, params)
@@ -183,34 +206,51 @@ checkParams <- function(params, method) {
 
 #' Wrapper function for dimensionality reduction methods
 #'
-#' @param Y [N x P] data matrix for which the dimensionality of P should be
+#' @param Y \[N x P\] data matrix for which the dimensionality of P should be
 #' reduced
 #' @param distY [dist] object of class dist containing pairwise distances of Y
 #' used for methods DiffusionMap, Isomap, MDS and nMDS; if non specified,
 #' stats::dist with Euclidean distance applied to supplied Y.
-#' @param dist.method [string] method for computing the distance matrix; one of
+#' @param dist.method [character] method for computing the distance matrix; one of
 #' euclidean, maximum, manhattan, canberra, binary or minkowski; see
-#' \link{\code{stats::dist}} for details.
-#' @param method Dimensionality reduction method [string] to be applied; one of
-#' DiffusionsMaps, DRR, ICA, LLE, Isomap, LaplacianEigenmap, MDS, PCA, kPCA,
-#' nMDS, tSNE and PEER
-#' @param optN optimal number [int] of neighbours to consider for dimensionality
-#' reduction; relevant for methods LLE, LaplacianEigenmaps, Isomap and tSNE.
-#' @param ndim maximum dimensionality [int] to retain in the data; large values
-#' can cause long computation times
+#' \code{\link[stats]{dist}} for details.
+#' @param method Dimensionality reduction method [character] to be applied; one
+#' of DiffusionsMaps, DRR, ICA, LLE, Isomap, LaplacianEigenmap, MDS, PCA, kPCA,
+#' nMDS and tSNE.
+#' @param optN optimal number [integer] of neighbours to consider for
+#' dimensionality reduction; relevant for methods LLE, LaplacianEigenmaps,
+#' Isomap and tSNE.
+#' @param ndim maximum dimensionality [integer] to retain in the data; large
+#' values can cause long computation times.
 #' @param verbose [logical] If set, progress messages are printed to standard
-#' out
+#' out.
 #' @param params [list] optional additional parameters for dimensionality
-#' reduction methods; see details
+#' reduction methods; see details.
 #' @return named list with dimensionality reduced phenotypes (reducedY) and
 #' object returned by specified dimensionality reduction method (results) with
-#' additional output, see details
+#' additional output, see details.
+#' @details methodsDimReduction wraps around the following implementations of
+#' the dimensionality reduction methods it provides:
+#' * Diffusion Map: \code{\link[diffusionMap]{diffuse}}
+#' * Dimensionality reduction by regression (DRR): \code{\link[DRR]{drr}}
+#' * Independent component analysis (ICA): \code{\link[fastICA]{fastICA}}
+#' * Local liner embedding (LLE): \code{\link[lle]{lle}}
+#' * Isomap: \code{\link[vegan]{isomap}}
+#' * Laplacian Eigenmap: \code{\link[loe]{spec.emb}} and
+#'   \code{\link[loe]{make.kNNG}}
+#' * Multi-dimensional scaling (MDS) : \code{\link[stats]{cmdscale}}
+#' * Principal component analysis (PCA): \code{\link[stats]{prcomp}}
+#' * Kernel PCA (kPCA): \code{\link[kernlab]{kpca}}
+#' * non-metrix MDS (nMDS): \code{\link[vegan]{metaMDS}}
+#' * t- stochastic neighbourhood embedding (tSNE): \code{\link[Rtsne]{Rtsne}}
+#' * Uniform manifold approximation and projection (umap):
+#'    \code{\link[umap]{umap}}
 methodsDimReduction <- function(Y, ndim, distY=dist(Y, method=dist.method),
                                 dist.method="euclidean",
                                 method=c("DiffusionMap", "DRR", "ICA",
                                          "LLE", "Isomap", "LaplacianEigenmap",
                                          "MDS", "PCA","kPCA", "nMDS",
-                                         "tSNE", "PEER", "UMAP"),
+                                         "tSNE", "UMAP"),
                                 optN=NULL, verbose=FALSE, params=NULL){
 
 
@@ -345,21 +385,23 @@ methodsDimReduction <- function(Y, ndim, distY=dist(Y, method=dist.method),
         results <- umap::umap(Y, usedParams)
         #n_neighbors=optN, n_components=ndim, verbose=verbose)
         reducedY <- results$layout
-    } else if (method == "PEER") {
-        model = peer::PEER()
-        # Set observed data
-        peer::PEER_setPhenoMean(model, Y)
-        peer::PEER_setAdd_mean(model, TRUE)
-        peer::PEER_setNk(model, 100)
-        peer::PEER_setNmax_iterations(model, 1000)
-        peer::PEER_update(model)
-        results <- list(Y=peer::PEER_getX(model)[,-1], W=peer::PEER_getW(model), 
-                        precision=peer::PEER_getAlpha(model))
-        reducedY <- results$Y
+    # While PEER is not available on CRAN, this part cannot be supported
+    #} else if (method == "PEER") {
+    #    model = peer::PEER()
+    #    # Set observed data
+    #    peer::PEER_setPhenoMean(model, Y)
+    #    peer::PEER_setAdd_mean(model, TRUE)
+    #    peer::PEER_setNk(model, 100)
+    #    peer::PEER_setNmax_iterations(model, 1000)
+    #    peer::PEER_update(model)
+    #    results <- list(Y=peer::PEER_getX(model)[,-1], W=peer::PEER_getW(model), 
+    #                    precision=peer::PEER_getAlpha(model))
+    #    reducedY <- results$Y
     } else {
         stop("Method: ", method, " does not exist, possible methods are: ",
              "DiffusionsMaps, DRR, ICA, LLE, Isomap, LaplacianEigenmap, MDS,",
-             "PCA,", "kPCA, nMDS, tSNE, UMAP and PEER")
+             "PCA,", "kPCA, nMDS, tSNE and UMAP")
+    #         "PCA,", "kPCA, nMDS, tSNE, UMAP and PEER")
     }
     return(list(reducedY=reducedY, results=results))
 }
@@ -367,40 +409,59 @@ methodsDimReduction <- function(Y, ndim, distY=dist(Y, method=dist.method),
 #' Compute dimensionality reduction for subsets of the input data
 #'
 #'
-#' @param Y [N x P] data matrix for which the dimensionality of P should be
+#' @param Y \[N x P\] data matrix for which the dimensionality of P should be
 #' reduced,
-#' @param seed [int] seed to initialise random number generator for drawing
+#' @param seed [integer] seed to initialise random number generator for drawing
 #' subsets of Y.
-#' @param size [float] proportion of samples from total number of samples to
+#' @param size [double] proportion of samples from total number of samples to
 #' to choose for each subset.
-#' @param nrSubsets [int] number of subsets to generate and apply dimensionality
+#' @param nrSubsets [integer] number of subsets to generate and apply dimensionality
 #' reduction to.
-#' @param method dimensionality reduction method [string] to be applied; one of
+#' @param method dimensionality reduction method [character] to be applied; one of
 #' DiffusionMap, DRR, ICA, LLE, Isomap, LaplacianEigenmap, MDS, PCA, kPCA,
 #' nMDS, tSNE and PEER.
-#' @param optN optimal number [int] of neighbours to consider for dimensionality
+#' @param optN optimal number [integer] of neighbours to consider for dimensionality
 #' reduction; relevant for methods LLE, LaplacianEigenmaps, Isomap and tSNE. If
-#' not provided, will be estimated via \code{\link{lle::calc_k}}.
+#' not provided, will be estimated via \code{\link[lle]{calc_k}}.
 #' @param ndim maximum dimensionality [int] to retain in the data; large values
 #' can cause long computation times; if not provided max(P,N) is chosen.
 #' @param kmin if optN is not provided, kmin [int] specifies the minimum number
-#' of neighbours supplied to  \code{\link{lle::calc_k}}.
+#' of neighbours supplied to  \code{\link[lle]{calc_k}}.
 #' @param kmax if optN is not provided, kmax [int] specifies the maximum number
-#' of neighbours supplied to  \code{\link{lle::calc_k}}.
+#' of neighbours supplied to  \code{\link[lle]{calc_k}}.
 #' @param parallel if optN is not provided and parallel TRUE, parallel
-#' computation on multiple cpu cores is used with \code{\link{lle::calc_k}}.
+#' computation on multiple cpu cores is used with \code{\link[lle]{calc_k}}.
 #' @param verbose [logical] If set, progress messages are printed to standard
 #' out.
 #' @param is.list.ellipsis [logical] if ... arguments are provided as list, set
 #' TRUE.
+#' @param ... Additional arguments passed to dimensionality reduction methods.
+#' For possible arguments, check function decomentation. See details for 
+#' relevant packages and functions.
 #' @return list of size nrSubsets, containing at each entry a named list of
-#' results from \link{\code{computeDimReduction}}:
+#' results from \code{\link{computeDimReduction}}:
 #' Y_red:  named list with dimensionality reduced phenotypes (reducedY) and
 #' object returned by specified dimensionality reduction method (results) with
 #' additional output
 #' M: vector [double] with Trustworthiness and Continuity estimates for the
 #' dimensionality reduction
-#'
+#' @details subsetDimReduction wraps around the following implementations of
+#' the dimensionality reduction methods it provides:
+#' * Diffusion Map: \code{\link[diffusionMap]{diffuse}}
+#' * Dimensionality reduction by regression (DRR): \code{\link[DRR]{drr}}
+#' * Independent component analysis (ICA): \code{\link[fastICA]{fastICA}}
+#' * Local liner embedding (LLE): \code{\link[lle]{lle}}
+#' * Isomap: \code{\link[vegan]{isomap}}
+#' * Laplacian Eigenmap: \code{\link[loe]{spec.emb}} and 
+#'   \code{\link[loe]{make.kNNG}}
+#' * Multi-dimensional scaling (MDS) : \code{\link[stats]{cmdscale}}
+#' * Principal component analysis (PCA): \code{\link[stats]{prcomp}}
+#' * Kernel PCA (kPCA): \code{\link[kernlab]{kpca}}
+#' * non-metrix MDS (nMDS): \code{\link[vegan]{metaMDS}}
+#' * t- stochastic neighbourhood embedding (tSNE): \code{\link[Rtsne]{Rtsne}}
+#' * Uniform manifold approximation and projection (umap):
+#'    \code{\link[umap]{umap}}
+#' * PEER: \href{https://github.com/PMBio/peer/wiki/Installation-instructions}{PEER}
 #' @export
 subsetDimReduction <- function(Y, seed, size=0.8, nrSubsets=10, method,
                                optN=NULL, ndim=NULL,
