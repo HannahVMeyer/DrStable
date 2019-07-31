@@ -15,21 +15,20 @@ knitr::opts_chunk$set(
 [![Build Status](https://travis-ci.org/HannahVMeyer/drStable.svg?branch=master)](https://travis-ci.org/HannahVMeyer/drStable)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## <i class="fa fa-map" aria-hidden="true"></i> drStable
+
+## <i class="fas fa-shapes" aria-hidden="true"></i> drStable
 The analysis of high-dimensional datasets often requires extracting
 meaningful variables from the data or compress the data into a more
 tractable number of features. 
 Feature extraction can be achieved by using dimensionality methods. 
 
-**drStable** provides an interface for easy access to 13 different
+**drStable** provides an interface for easy access to 12 different
 dimensionality reduction methods: DiffusionMap, DRR, ICA, LLE, Isomap,
-LaplacianEigenmap, MDS, PCA, kPCA, nMDS, tSNE, UMAP and PEER.
+LaplacianEigenmap, MDS, PCA, kPCA, nMDS, tSNE and UMAP.
 
 **drStable** introduces a novel stability criterion which provides the user with
 a tool of estimating the number of low-dimensional features that can be reliably
 recovered and thus determine the stable dimensions of the low-dimensional space. 
-
-Full documentation is available at http://HannahVMeyer.github.io/drStable/.
 
 **drStable** will be useful in any application that requires the selection
 of a low-dimensional feature representation of the original data. For instance,
