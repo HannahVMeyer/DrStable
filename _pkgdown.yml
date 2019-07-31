@@ -1,0 +1,43 @@
+reference:
+- title: Main functions
+  desc: ~
+  contents:
+  - '`computeDimReduction`'
+  - '`estimateStability`'
+- title: Dimensionality reduction helper functions
+  desc:  >
+    Exported helper functions for dimensionality reduction: accesible
+    to the user, but recommended use via computeDimReduction.
+  contents:
+  - '`checkParams`'
+  - '`methodsDimReduction`'
+  - '`subsetDimReduction`'
+- title: Output functions
+  desc: ~
+  contents:
+  - '`saveDimReduction`'
+- title: General helper functions
+  desc: ~
+  contents:
+  - '`invnorm`'
+  - '`rmnulls`'
+  - '`commaList2vector`'
+navbar:
+    type: standard
+    left:
+    - icon: fa-home
+      href: index.html
+    - icon: fa-file
+      text: "documentation"
+      menu:
+      -  text: "Stable dimensionality reduction"
+    right:
+    - icon: fa-newspaper-o
+      text: "news"
+      href: news/index.html
+    - icon: fa-code
+      text: "functions"
+      href: reference/index.html
+    - icon: fa-github fa-lg
+      text: "github"
+      href: https://github.com/HannahVMeyer/drStable
