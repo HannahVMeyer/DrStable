@@ -1,0 +1,12 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+.gitignore
+INDEX.*
+README.Rmd
+_pkgdown.yml
+_config.yml
+.travis.yml
+docs
+.github
+test_vignettes
+
