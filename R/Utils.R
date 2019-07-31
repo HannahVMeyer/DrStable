@@ -11,7 +11,8 @@
 #' given as vector.
 #' @seealso \code{\link{message}} which this function wraps
 #' @examples
-#' vmessage("Hello world", sep=' ')
+#' # (not run)
+#' # vmessage("Hello world", sep=' ')
 vmessage <- function(userinfo, verbose=TRUE, sep=" ") {
     if (!is.character(sep)) {
         stop("Separator passed to vmessage must be of type character")
@@ -28,8 +29,9 @@ vmessage <- function(userinfo, verbose=TRUE, sep=" ") {
 #' @param data matrix of vector [float] to compute sum of squares for.
 #' @return value [float] of sum of squares.
 #' @examples 
-#' x <- 1:10
-#' x_ss <- ss(x)
+#' # (not run)
+#' # x <- 1:10
+#' # x_ss <- ss(x)
 ss <- function(data) {
     return(sum(data^2))
 }
