@@ -16,13 +16,15 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
 
-<!-- sticky kit -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+<!-- headroom.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -46,6 +48,7 @@ valid and returns a list of all default and optinally set parameters." />
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
+
 
 
   </head>
@@ -119,6 +122,7 @@ valid and returns a list of all default and optinally set parameters." />
 </div><!--/.navbar -->
 
       
+
       </header>
 
 <div class="row">
@@ -143,12 +147,12 @@ valid and returns a list of all default and optinally set parameters.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>params</th>
-      <td><p><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a> of parameters to check; list names must be identical
+      <td><p><a href='https://rdrr.io/r/base/list.html'>list</a> of parameters to check; list names must be identical
 to argument names of chosen dimensionality reduction method.</p></td>
     </tr>
     <tr>
       <th>method</th>
-      <td><p>Dimensionality reduction method <a href='https://www.rdocumentation.org/packages/base/topics/character'>character</a> to be applied; one
+      <td><p>Dimensionality reduction method <a href='https://rdrr.io/r/base/character.html'>character</a> to be applied; one
 of DiffusionMap, DRR, ICA, LLE, Isomap, LaplacianEigenmap, MDS, PCA, kPCA,
 nMDS, tSNE and UMAP.</p></td>
     </tr>
@@ -164,26 +168,27 @@ dimensionality reduction method</p>
     <p>checkParams checks if specified parameters are valid parameters of
 the underlying dimensionality reduction methods. A list of the methods is
 provided below:</p><ul>
-<li><p>Diffusion Map: <code><a href='https://www.rdocumentation.org/packages/diffusionMap/topics/diffuse'>diffuse</a></code></p></li>
-<li><p>Dimensionality reduction by regression (DRR): <code><a href='https://www.rdocumentation.org/packages/DRR/topics/drr'>drr</a></code></p></li>
-<li><p>Independent component analysis (ICA): <code><a href='https://www.rdocumentation.org/packages/fastICA/topics/fastICA'>fastICA</a></code></p></li>
-<li><p>Local liner embedding (LLE): <code><a href='https://www.rdocumentation.org/packages/lle/topics/lle'>lle</a></code></p></li>
-<li><p>Isomap: <code><a href='https://www.rdocumentation.org/packages/vegan/topics/isomap'>isomap</a></code></p></li>
-<li><p>Laplacian Eigenmap: <code><a href='https://www.rdocumentation.org/packages/loe/topics/spec.emb'>spec.emb</a></code> and
-<code><a href='https://www.rdocumentation.org/packages/loe/topics/make.kNNG'>make.kNNG</a></code></p></li>
-<li><p>Multi-dimensional scaling (MDS) : <code><a href='https://www.rdocumentation.org/packages/stats/topics/cmdscale'>cmdscale</a></code></p></li>
-<li><p>Principal component analysis (PCA): <code><a href='https://www.rdocumentation.org/packages/stats/topics/prcomp'>prcomp</a></code></p></li>
-<li><p>Kernel PCA (kPCA): <code><a href='https://www.rdocumentation.org/packages/kernlab/topics/kpca'>kpca</a></code></p></li>
-<li><p>non-metrix MDS (nMDS): <code><a href='https://www.rdocumentation.org/packages/vegan/topics/metaMDS'>metaMDS</a></code></p></li>
-<li><p>t- stochastic neighbourhood embedding (tSNE): <code><a href='https://www.rdocumentation.org/packages/Rtsne/topics/Rtsne'>Rtsne</a></code></p></li>
+<li><p>Diffusion Map: <code><a href='https://rdrr.io/pkg/diffusionMap/man/diffuse.html'>diffuse</a></code></p></li>
+<li><p>Dimensionality reduction by regression (DRR): <code><a href='https://rdrr.io/pkg/DRR/man/drr.html'>drr</a></code></p></li>
+<li><p>Independent component analysis (ICA): <code><a href='https://rdrr.io/pkg/fastICA/man/fastICA.html'>fastICA</a></code></p></li>
+<li><p>Local liner embedding (LLE): <code><a href='https://rdrr.io/pkg/lle/man/lle.html'>lle</a></code></p></li>
+<li><p>Isomap: <code><a href='https://rdrr.io/pkg/vegan/man/isomap.html'>isomap</a></code></p></li>
+<li><p>Laplacian Eigenmap: <code><a href='https://rdrr.io/pkg/loe/man/spec.emb.html'>spec.emb</a></code> and
+<code><a href='https://rdrr.io/pkg/loe/man/make.kNNG.html'>make.kNNG</a></code></p></li>
+<li><p>Multi-dimensional scaling (MDS) : <code><a href='https://rdrr.io/r/stats/cmdscale.html'>cmdscale</a></code></p></li>
+<li><p>Principal component analysis (PCA): <code><a href='https://rdrr.io/r/stats/prcomp.html'>prcomp</a></code></p></li>
+<li><p>Kernel PCA (kPCA): <code><a href='https://rdrr.io/pkg/kernlab/man/kpca.html'>kpca</a></code></p></li>
+<li><p>non-metrix MDS (nMDS): <code><a href='https://rdrr.io/pkg/vegan/man/metaMDS.html'>metaMDS</a></code></p></li>
+<li><p>t- stochastic neighbourhood embedding (tSNE): <code><a href='https://rdrr.io/pkg/Rtsne/man/Rtsne.html'>Rtsne</a></code></p></li>
 <li><p>Uniform manifold approximation and projection (umap):
-<code><a href='https://www.rdocumentation.org/packages/umap/topics/umap'>umap</a></code></p></li>
+<code><a href='https://rdrr.io/pkg/umap/man/umap.html'>umap</a></code></p></li>
 </ul>
+
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>params_DRR</span> <span class='kw'>&lt;-</span> <span class='fu'>checkParams</span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>cv.folds</span><span class='kw'>=</span><span class='fl'>10</span>), <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"DRR"</span>)
-<span class='no'>params_ICA</span> <span class='kw'>&lt;-</span> <span class='fu'>checkParams</span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>fun</span><span class='kw'>=</span><span class='st'>"logcosh"</span>, <span class='kw'>maxit</span><span class='kw'>=</span><span class='fl'>500</span>), <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"ICA"</span>)</div></pre>
+    <pre class="examples"><div class='input'><span class='no'>params_DRR</span> <span class='kw'>&lt;-</span> <span class='fu'>checkParams</span>(<span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>cv.folds</span><span class='kw'>=</span><span class='fl'>10</span>), <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"DRR"</span>)
+<span class='no'>params_ICA</span> <span class='kw'>&lt;-</span> <span class='fu'>checkParams</span>(<span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>fun</span><span class='kw'>=</span><span class='st'>"logcosh"</span>, <span class='kw'>maxit</span><span class='kw'>=</span><span class='fl'>500</span>), <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"ICA"</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -200,19 +205,23 @@ provided below:</p><ul>
   </div>
 </div>
 
+
       <footer>
       <div class="copyright">
   <p>Developed by Hannah Meyer.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.9100.</p>
 </div>
+
       </footer>
    </div>
 
   
 
+
   </body>
 </html>
+
 
