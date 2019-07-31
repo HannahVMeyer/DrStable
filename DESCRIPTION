@@ -23,6 +23,7 @@ Description: The analysis of high-dimensional datasets often requires to extract
     P traits. 
 Depends:
     R (>= 3.5.0)
+biocViews:
 Imports:
     diffusionMap (>= 1.1.0),
     DRR (>= 0.0.3),
