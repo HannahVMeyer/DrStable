@@ -16,15 +16,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
 
-<!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<!-- sticky kit -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -47,7 +45,6 @@
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
-
 
 
   </head>
@@ -121,7 +118,6 @@
 </div><!--/.navbar -->
 
       
-
       </header>
 
 <div class="row">
@@ -175,7 +171,7 @@ nMDS, tSNE and PEER.</p></td>
       <th>optN</th>
       <td><p>optimal number [integer] of neighbours to consider for dimensionality
 reduction; relevant for methods LLE, LaplacianEigenmaps, Isomap and tSNE. If
-not provided, will be estimated via <code><a href='https://rdrr.io/pkg/lle/man/calc_k.html'>calc_k</a></code>.</p></td>
+not provided, will be estimated via <code><a href='https://www.rdocumentation.org/packages/lle/topics/calc_k'>calc_k</a></code>.</p></td>
     </tr>
     <tr>
       <th>ndim</th>
@@ -185,12 +181,12 @@ can cause long computation times; if not provided max(P,N) is chosen.</p></td>
     <tr>
       <th>kmin</th>
       <td><p>if optN is not provided, kmin [int] specifies the minimum number
-of neighbours supplied to  <code><a href='https://rdrr.io/pkg/lle/man/calc_k.html'>calc_k</a></code>.</p></td>
+of neighbours supplied to  <code><a href='https://www.rdocumentation.org/packages/lle/topics/calc_k'>calc_k</a></code>.</p></td>
     </tr>
     <tr>
       <th>kmax</th>
       <td><p>if optN is not provided, kmax [int] specifies the maximum number
-of neighbours supplied to  <code><a href='https://rdrr.io/pkg/lle/man/calc_k.html'>calc_k</a></code>.</p></td>
+of neighbours supplied to  <code><a href='https://www.rdocumentation.org/packages/lle/topics/calc_k'>calc_k</a></code>.</p></td>
     </tr>
     <tr>
       <th>verbose</th>
@@ -200,7 +196,7 @@ out.</p></td>
     <tr>
       <th>parallel</th>
       <td><p>if optN is not provided and parallel TRUE, parallel
-computation on multiple cpu cores is used with <code><a href='https://rdrr.io/pkg/lle/man/calc_k.html'>calc_k</a></code>.</p></td>
+computation on multiple cpu cores is used with <code><a href='https://www.rdocumentation.org/packages/lle/topics/calc_k'>calc_k</a></code>.</p></td>
     </tr>
     <tr>
       <th>is.list.ellipsis</th>
@@ -229,20 +225,20 @@ dimensionality reduction</p>
 
     <p>subsetDimReduction wraps around the following implementations of
 the dimensionality reduction methods it provides:
-* Diffusion Map: <code><a href='https://rdrr.io/pkg/diffusionMap/man/diffuse.html'>diffuse</a></code>
-* Dimensionality reduction by regression (DRR): <code><a href='https://rdrr.io/pkg/DRR/man/drr.html'>drr</a></code>
-* Independent component analysis (ICA): <code><a href='https://rdrr.io/pkg/fastICA/man/fastICA.html'>fastICA</a></code>
-* Local liner embedding (LLE): <code><a href='https://rdrr.io/pkg/lle/man/lle.html'>lle</a></code>
-* Isomap: <code><a href='https://rdrr.io/pkg/vegan/man/isomap.html'>isomap</a></code>
-* Laplacian Eigenmap: <code><a href='https://rdrr.io/pkg/loe/man/spec.emb.html'>spec.emb</a></code> and 
-  <code><a href='https://rdrr.io/pkg/loe/man/make.kNNG.html'>make.kNNG</a></code>
-* Multi-dimensional scaling (MDS) : <code><a href='https://rdrr.io/r/stats/cmdscale.html'>cmdscale</a></code>
-* Principal component analysis (PCA): <code><a href='https://rdrr.io/r/stats/prcomp.html'>prcomp</a></code>
-* Kernel PCA (kPCA): <code><a href='https://rdrr.io/pkg/kernlab/man/kpca.html'>kpca</a></code>
-* non-metrix MDS (nMDS): <code><a href='https://rdrr.io/pkg/vegan/man/metaMDS.html'>metaMDS</a></code>
-* t- stochastic neighbourhood embedding (tSNE): <code><a href='https://rdrr.io/pkg/Rtsne/man/Rtsne.html'>Rtsne</a></code>
+* Diffusion Map: <code><a href='https://www.rdocumentation.org/packages/diffusionMap/topics/diffuse'>diffuse</a></code>
+* Dimensionality reduction by regression (DRR): <code><a href='https://www.rdocumentation.org/packages/DRR/topics/drr'>drr</a></code>
+* Independent component analysis (ICA): <code><a href='https://www.rdocumentation.org/packages/fastICA/topics/fastICA'>fastICA</a></code>
+* Local liner embedding (LLE): <code><a href='https://www.rdocumentation.org/packages/lle/topics/lle'>lle</a></code>
+* Isomap: <code><a href='https://www.rdocumentation.org/packages/vegan/topics/isomap'>isomap</a></code>
+* Laplacian Eigenmap: <code><a href='https://www.rdocumentation.org/packages/loe/topics/spec.emb'>spec.emb</a></code> and 
+  <code><a href='https://www.rdocumentation.org/packages/loe/topics/make.kNNG'>make.kNNG</a></code>
+* Multi-dimensional scaling (MDS) : <code><a href='https://www.rdocumentation.org/packages/stats/topics/cmdscale'>cmdscale</a></code>
+* Principal component analysis (PCA): <code><a href='https://www.rdocumentation.org/packages/stats/topics/prcomp'>prcomp</a></code>
+* Kernel PCA (kPCA): <code><a href='https://www.rdocumentation.org/packages/kernlab/topics/kpca'>kpca</a></code>
+* non-metrix MDS (nMDS): <code><a href='https://www.rdocumentation.org/packages/vegan/topics/metaMDS'>metaMDS</a></code>
+* t- stochastic neighbourhood embedding (tSNE): <code><a href='https://www.rdocumentation.org/packages/Rtsne/topics/Rtsne'>Rtsne</a></code>
 * Uniform manifold approximation and projection (umap):
-   <code><a href='https://rdrr.io/pkg/umap/man/umap.html'>umap</a></code>
+   <code><a href='https://www.rdocumentation.org/packages/umap/topics/umap'>umap</a></code>
 * PEER: <a href='https://github.com/PMBio/peer/wiki/Installation-instructions'>PEER</a></p>
     
 
@@ -260,23 +256,19 @@ the dimensionality reduction methods it provides:
   </div>
 </div>
 
-
       <footer>
       <div class="copyright">
   <p>Developed by Hannah Meyer.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.9100.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
 </div>
-
       </footer>
    </div>
 
   
 
-
   </body>
 </html>
-
 

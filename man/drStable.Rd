@@ -4,7 +4,7 @@
 \name{drStable}
 \alias{drStable}
 \alias{drStable-package}
-\title{Stability}
+\title{drStable}
 \description{
-Stability
+drStable
 }
