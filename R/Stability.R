@@ -10,6 +10,9 @@
 #' dimensional embedding across common sample sets.
 #' @param threshold [double] Threshold for stability between 0 and 1 or vector 
 #' of thresholds between 0 and 1.
+#' @param procrustes [logical] indication whether a procrustes transformation
+#' to match the lower dimensional representations of common samples between
+#' subsets should be performed.
 #' @param verbose [logical] If set, progress messages are printed to standard
 #' out
 #' @return named list with [1] stability: list with one dataframe per threshold,
@@ -17,8 +20,8 @@
 #' components for that threshold value, [2] corr: data.frame with correlation of
 #' the low-dimensional components for all pairwise comparisons and components.
 #' @export
-estimateStability <- function(dr, threshold, verbose=FALSE) {
-    comparison  <- resultsComparison(dr, verbose=verbose)
+estimateStability <- function(dr, threshold, procrustes=FALSE, verbose=FALSE) {
+    comparison  <- resultsComparison(dr, procrustes=procrustes, verbose=verbose)
     formated <- formatComparison(comparison)
     cor_matrix <- formated$maxcor
     rownames(cor_matrix) <- unlist(sapply(1:(length(comparison)-1), 
@@ -34,17 +37,21 @@ estimateStability <- function(dr, threshold, verbose=FALSE) {
     
     unique_components <- data.frame(component=unique(cor_df$component), 
                                     threshold=threshold)
-    stability_count <- reshape2::acast(cor_df, component~., 
-                                       value.var="abs_correlation",
-                                       subset = plyr::.(abs_correlation > 
-                                                        threshold),
-                                       length)
-    stability_norm <- as.numeric(stability_count)/
-        length(levels(cor_df$comparison))
-    stability_comp <- data.frame(stability=stability_norm,
-                                component=as.numeric(rownames(stability_count)))
-        
-
+    if (any(cor_df$abs_correlation > threshold)) {
+        stability_count <- reshape2::acast(cor_df, component~., 
+                                           value.var="abs_correlation",
+                                           subset = plyr::.(cor_df$abs_correlation > 
+                                                            threshold),
+                                           length)
+        stability_norm <- as.numeric(stability_count)/
+            length(levels(cor_df$comparison))
+        stability_comp <- 
+            data.frame(stability=stability_norm,
+                       component=as.numeric(rownames(stability_count)))
+    } else {
+        stability_comp <- data.frame(stability=rep(0, nrow(unique_components)),
+                                     component=unique_components$component)
+    }
     stability_all <- merge(stability_comp, unique_components, by="component",
                            all.y=TRUE)
     stability_all$stability[is.na(stability_all$stability)] <- 0
@@ -82,15 +89,17 @@ medianCorr <- function(es, threshold) {
 #' entry is a matrix with row and column names; row.names are crucial to allow
 #' for the comparison of the lower dimensional embedding across common sample
 #' sets.
+#' @param procrustes [logical] indication whether a procrustes transformation
+#' to match the lower dimensional representations of common samples between
+#' subsets should be performed.
 #' @param verbose [logical] If set, progress messages are printed to standard
-#' out
-#'
+#' out.
 #' @return named list with the size of the overlapping samples between samples
 #' sets (size), the reordered correlation coefficients (reorder), the maximum
 #' correlation (maxcor), the original column-wise correlation coefficients
 #' (componentxcomponent_r) and the reordered column-wise correlation
 #' coefficients (componentxcomponent_r_reordered)
-resultsComparison <- function(data_list, verbose=FALSE) {
+resultsComparison <- function(data_list, procrustes, verbose=FALSE) {
     if (is.null(names(data_list))) {
         names(data_list) <- paste("cv", 1:length(data_list), sep="")
     }
@@ -99,7 +108,8 @@ resultsComparison <- function(data_list, verbose=FALSE) {
             if (perm1 <  perm2) {
                 vmessage(c("Comparing list element", perm1, "with element",
                            perm2), verbose=verbose)
-                compareSets(data_list[[perm2]]$Yred, data_list[[perm1]]$Yred)
+                compareSets(data_list[[perm2]]$Yred, data_list[[perm1]]$Yred,
+                            procrustes=procrustes)
             }
         }, perm1=perm1)
         names(tmp) <- names(data_list)
@@ -125,16 +135,24 @@ resultsComparison <- function(data_list, verbose=FALSE) {
 
 #' Compare dimensionality reduction across subsets
 #'
-#' @param set1 [M1 x D] matrix with M1 samples and D dimensionality reduced
-#' data P
-#' @param set2 [M2 x D] matrix with M2 samples and D dimensionality reduced
-#' data P
+#' @param set1 M1 x D [matrix] with M1 samples and D dimensionality reduced
+#' data P.
+#' @param set2 M2 x D [matrix] with M2 samples and D dimensionality reduced
+#' data P.
+#' @param procrustes [logical] indication whether a procrustes transformation
+#' to match the lower dimensional representations of common samples between
+#' set1 and set2 should be performed.
 #' @param verbose [logical] If set, progress messages are printed to standard
-#' out
+#' out.
 #' @return named list
-compareSets <- function(set1, set2, verbose=FALSE) {
+compareSets <- function(set1, set2, verbose=FALSE, procrustes=FALSE) {
     common_subset <- findIntersect(set1, set2)
     size_subset <- dim(common_subset[[1]])[1]
+    if (procrustes) {
+        common_subset[[2]] <- MCMCpack::procrustes(common_subset[[1]],
+                                                   common_subset[[2]],
+                             dilation=TRUE, translation=TRUE)$X.new
+    }
     componentxcomponent <- correlateSets(common_subset[[1]],
                                          common_subset[[2]])
     componentxcomponent_r <- sapply(componentxcomponent, function(fac) fac$r)
@@ -193,17 +211,32 @@ formatComparison <- function(comparison_list) {
 
 #' Find intersecting samples between two sets and order according to first
 #' 
-#' @param set1 [M1 x D] matrix with M1 samples and D dimensionality reduced
-#' data P
-#' @param set2 [M2 x D] matrix with M2 samples and D dimensionality reduced
-#' data P
-#' @return list with set1 and set2 filtered for overlapping samples and ordered
-#' to the order of set1
+#' @param set1 M1 x D [matrix] with M1 samples and D dimensionality reduced
+#' data P.
+#' @param set2 M2 x D [matrix] with M2 samples and D dimensionality reduced
+#' data P.
+#' @return [list] with set1 and set2 filtered for overlapping samples and
+#' ordered to the order of set1.
 findIntersect <- function(set1, set2) {
     set2 <- set2[which(rownames(set2) %in% rownames(set1)),]
     set1 <- set1[which(rownames(set1) %in% rownames(set2)),]
     set2 <- set2[match(rownames(set1),rownames(set2)),]
     return(list(set1, set2))
+}
+
+#' Aligng datasets with procrustes analyses
+#'
+#' @param set1 M x D [matrix] with M samples and D dimensionality reduced
+#' data P; the matrix to be transformed.
+#' @param set2 M x D [matrix] with M samples and D dimensionality reduced
+#' data P (with the same sample order as set1); the target matrix.
+#' @param dilation [logical] indicating whether set1 should be dilated.
+#' @param translation [logical] indicating whether set1 should be translated.
+#' @return [matrix] that is the Procrustes transformed version of set1.
+alignSets <- function(set1, set2, dilation=TRUE, translation=TRUE) {
+    res <- MCMCpack::procrustes(set1, set2,
+                         dilation=dilation, translation=translation)
+    return(res$X.new)
 }
 
 #' Column-wise correlation of two datasets
@@ -240,9 +273,16 @@ analyseCorrelation <- function(mat, verbose=FALSE) {
     maxcor <- rep(0, nrow(mat))
     diag_used <- rep(0, nrow(mat))
 
-    mat_in = matrix(0, nr=nrow(mat), nc=ncol(mat))
+    mat_in = matrix(0, nrow=nrow(mat), ncol=ncol(mat))
     iteration=1
-
+    medianTopCorr <- median(order(abs(diag(mat)), decreasing=TRUE)[1:3])
+    if (medianTopCorr > ceiling(ncol(mat)/2)) {
+        mat <- apply(mat, 1, rev)
+        mat <- apply(mat, 1, rev)
+        reversed <- TRUE
+    } else {
+        reversed <- FALSE
+    }
     while(!sum(diag(mat)) == 0)  {
         highest_diag_index_memory=c()
         for (i in 1: nrow(mat)){
@@ -297,7 +337,7 @@ analyseCorrelation <- function(mat, verbose=FALSE) {
                 mat[index_max_diag,] <- 0
                 mat[,index_max_diag] <- 0
             } else  {
-                if ( abs(mat[ index_max_diag,max_col_index_max_diag]) >=
+                if (abs(mat[ index_max_diag,max_col_index_max_diag]) >=
                         abs(mat[max_row_index_max_diag, index_max_diag])) {
                     reorder[1,index_max_diag] <- max_col_index_max_diag
                     reorder[2,index_max_diag] <- index_max_diag
@@ -319,6 +359,10 @@ analyseCorrelation <- function(mat, verbose=FALSE) {
                 }
             }
             if (all(diag(mat) == 0)){
+                if (reversed) {
+                    reorder <- t(apply(reorder, 1, rev))
+                    maxcor <- rev(maxcor)
+                }
                 return(list(reorder=reorder, maxcor=maxcor))
             }
             highest_diag_index_memory <- c(highest_diag_index_memory,
