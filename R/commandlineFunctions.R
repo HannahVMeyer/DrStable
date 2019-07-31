@@ -338,10 +338,10 @@ runEstimateStability <- function() {
     if (length(dr) > 1) {
         if (args$verbose) message("Determine stability of ", args$method)
         results <- estimateStability(dr, threshold=args$threshold)
-        write.table(results$stability, paste(orgs$outdir, "/", method,
+        write.table(results$stability, paste(args$outdir, "/", args$method,
             "_stability.csv", sep=""), sep=",", col.names=TRUE, row.names=FALSE,
             quote=FALSE)
-        write.table(results$corr, paste(orgs$outdir, "/", method,
+        write.table(results$corr, paste(args$outdir, "/", args$method,
             "_correlationCV.csv", sep=""), sep=",", col.names=TRUE,
             row.names=FALSE, quote=FALSE)
     } else {
@@ -429,10 +429,10 @@ wrapDR <- function(Y, args) {
             write.table(y_cv, cvfile, quote=FALSE, row.names=TRUE, col.names=NA,
                           sep=",")
 
-            if (verbose) {
+            if (args$verbose) {
                 message("Dimensionality reduction for crossvalidation:", x)
             }
-            dr <- computeDimReduction(m=args$method, Y=y_cv,
+            dr <- computeDimReduction(method=args$method, Y=y_cv,
                                       verbose=args$verbose,
                                       ndim=args$dim, optN=args$optN,
                                       kmin=args$kmin, kmax=args$kmax,
@@ -447,7 +447,7 @@ wrapDR <- function(Y, args) {
            return(dr)
         })
     } else {
-        dr <- computeDimReduction(m=args$method, Y=Y,
+        dr <- computeDimReduction(method=args$method, Y=Y,
                                       verbose=args$verbose,
                                       ndim=args$dim, optN=args$optN,
                                       kmin=args$kmin, kmax=args$kmax,
