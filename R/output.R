@@ -34,15 +34,3 @@ saveDimReduction <- function(results, method, outdir=NULL, name=NULL,
                          sep=""),
                 quote=FALSE, row.names=TRUE, col.names=NA, sep=",")
 }
-
-#' Save results from analyseDimreduction
-write_medians <- function(threshold) {
-    sapply(threshold, function(thr) {
-     write.table(paste(medians_maxcor$component[medians_maxcor$threshold >= 
-                                                   thr],
-                      collapse = ","),  
-                paste(output ,"/ComponentsPassingThr", thr, "_", method, 
-                      ".csv", sep=""), 
-                col.names=FALSE, row.names=FALSE, quote=FALSE)
-    })
-}
