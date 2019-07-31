@@ -15,9 +15,9 @@ Description: The analysis of high-dimensional datasets often requires to extract
     only a small number of free parameters, iii) to preserve the quantities of
     interest in the data. There are a variety of approaches for dimensionality
     reduction with different underlying mathematical concepts and parameters.
-    This package provides a simple function to access 13 dimensionality
+    This package provides a simple function to access 12 dimensionality
     reduction methods (DiffusionMap, DRR, ICA, LLE, Isomap, LaplacianEigenmap,
-    MDS, PCA, kPCA, nMDS, tSNE, UMAP and PEER). It introduces a new stability
+    MDS, PCA, kPCA, nMDS, tSNE and UMAP). It introduces a new stability
     criterion, which identifies the lower dimensional componet Z that can
     reliably be found in cross-validation on different subsets of M samples and
     P traits. 
@@ -44,12 +44,12 @@ Imports:
     data.table (>= 1.11.0),
     dplyr,
     plyr,
+    MCMCpack,
     PhenotypeSimulator
 Suggests:
     testthat,
     knitr,
     rmarkdown,
-    peer
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
