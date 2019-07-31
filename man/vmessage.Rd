@@ -21,7 +21,8 @@ printing of messages to standard out.
 on or off
 }
 \examples{
-vmessage("Hello world", sep=' ')
+# (not run)
+# vmessage("Hello world", sep=' ')
 }
 \seealso{
 \code{\link{message}} which this function wraps

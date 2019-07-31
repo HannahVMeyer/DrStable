@@ -9,34 +9,39 @@ computeDimReduction(Y, method, optN = NULL, ndim = NULL, kmin = 1,
   is.list.ellipsis = FALSE, ...)
 }
 \arguments{
-\item{Y}{[N x P] data matrix for which the dimensionality of P should be
+\item{Y}{\[N x P\] data matrix for which the dimensionality of P should be
 reduced}
 
-\item{method}{Dimensionality reduction method [string] to be applied; one of
-DiffusionsMaps, DRR, ICA, LLE, Isomap, LaplacianEigenmap, MDS, PCA, kPCA,
-nMDS, tSNE, UMAP and PEER}
+\item{method}{Dimensionality reduction method [character] to be applied; one
+of DiffusionsMaps, DRR, ICA, LLE, Isomap, LaplacianEigenmap, MDS, PCA, kPCA,
+nMDS, tSNE and UMAP.}
 
-\item{optN}{optimal number [int] of neighbours to consider for dimensionality
-reduction; relevant for methods LLE, LaplacianEigenmaps, Isomap and tSNE. If
-not provided, will be estimated via \code{\link{lle::calc_k}}.}
+\item{optN}{optimal number [integer] of neighbours to consider for
+dimensionality reduction; relevant for methods LLE, LaplacianEigenmaps,
+Isomap and tSNE. If not provided, will be estimated via
+\code{\link[lle]{calc_k}}.}
 
-\item{ndim}{maximum dimensionality [int] to retain in the data; large values
-can cause long computation times; if not provided max(P,N) is chosen.}
+\item{ndim}{maximum dimensionality [integer] to retain in the data; large
+values can cause long computation times; if not provided max(P,N) is chosen.}
 
-\item{kmin}{if optN is not provided, kmin [int] specifies the minimum number
-of neighbours supplied to  \code{\link{lle::calc_k}}}
+\item{kmin}{if optN is not provided, kmin [integer] specifies the minimum
+number of neighbours supplied to  \code{\link[lle]{calc_k}}.}
 
-\item{kmax}{if optN is not provided, kmax [int] specifies the maximum number
-of neighbours supplied to  \code{\link{lle::calc_k}}}
+\item{kmax}{if optN is not provided, kmax [integer] specifies the maximum
+number of neighbours supplied to  \code{\link[lle]{calc_k}}.}
 
 \item{verbose}{[logical] If set, progress messages are printed to standard
-out}
+out.}
 
-\item{parallel}{if optN is not provided and parallel TRUE, parallel
-computation on multiple cpu cores is used with \code{\link{lle::calc_k}}}
+\item{parallel}{[logical] if optN is not provided and parallel TRUE, parallel
+computation on multiple cpu cores is used with \code{\link[lle]{calc_k}}.}
 
 \item{is.list.ellipsis}{[logical] if ... arguments are provided as list, set
 TRUE.}
+
+\item{...}{Additional arguments passed to dimensionality reduction methods.
+For possible arguments, check function decomentation. See details for 
+relevant packages and functions.}
 }
 \value{
 named list of results from dimensionality reduction:

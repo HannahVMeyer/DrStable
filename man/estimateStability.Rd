@@ -4,7 +4,7 @@
 \alias{estimateStability}
 \title{Estimate stability}
 \usage{
-estimateStability(dr, threshold, verbose = FALSE)
+estimateStability(dr, threshold, procrustes = FALSE, verbose = FALSE)
 }
 \arguments{
 \item{dr}{[list] either output of \code{\link{subsetDimReduction}} or
@@ -15,6 +15,10 @@ dimensional embedding across common sample sets.}
 
 \item{threshold}{[double] Threshold for stability between 0 and 1 or vector 
 of thresholds between 0 and 1.}
+
+\item{procrustes}{[logical] indication whether a procrustes transformation
+to match the lower dimensional representations of common samples between
+subsets should be performed.}
 
 \item{verbose}{[logical] If set, progress messages are printed to standard
 out}

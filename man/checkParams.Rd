@@ -7,12 +7,12 @@
 checkParams(params, method)
 }
 \arguments{
-\item{params}{[list] of parameters to check; list names must be identical
+\item{params}{\link{list} of parameters to check; list names must be identical
 to argument names of chosen dimensionality reduction method.}
 
-\item{method}{Dimensionality reduction method [string] to be applied; one of
-DiffusionMap, DRR, ICA, LLE, Isomap, LaplacianEigenmap, MDS, PCA, kPCA,
-nMDS, tSNE, UMAP and PEER}
+\item{method}{Dimensionality reduction method \link{character} to be applied; one
+of DiffusionMap, DRR, ICA, LLE, Isomap, LaplacianEigenmap, MDS, PCA, kPCA,
+nMDS, tSNE and UMAP.}
 }
 \value{
 named list with default and specified parameters taken by specified
@@ -21,6 +21,27 @@ dimensionality reduction method
 \description{
 Checks if optional parameters passed to dimensionality reduction method are
 valid and returns a list of all default and optinally set parameters.
+}
+\details{
+checkParams checks if specified parameters are valid parameters of
+the underlying dimensionality reduction methods. A list of the methods is
+provided below:
+\itemize{
+\item Diffusion Map: \code{\link[diffusionMap]{diffuse}}
+\item Dimensionality reduction by regression (DRR): \code{\link[DRR]{drr}}
+\item Independent component analysis (ICA): \code{\link[fastICA]{fastICA}}
+\item Local liner embedding (LLE): \code{\link[lle]{lle}}
+\item Isomap: \code{\link[vegan]{isomap}}
+\item Laplacian Eigenmap: \code{\link[loe]{spec.emb}} and
+\code{\link[loe]{make.kNNG}}
+\item Multi-dimensional scaling (MDS) : \code{\link[stats]{cmdscale}}
+\item Principal component analysis (PCA): \code{\link[stats]{prcomp}}
+\item Kernel PCA (kPCA): \code{\link[kernlab]{kpca}}
+\item non-metrix MDS (nMDS): \code{\link[vegan]{metaMDS}}
+\item t- stochastic neighbourhood embedding (tSNE): \code{\link[Rtsne]{Rtsne}}
+\item Uniform manifold approximation and projection (umap):
+\code{\link[umap]{umap}}
+}
 }
 \examples{
 params_DRR <- checkParams(list(cv.folds=10), method="DRR")

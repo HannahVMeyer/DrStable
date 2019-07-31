@@ -16,6 +16,7 @@ value [float] of sum of squares.
 Compute sum of squares of vector or matrix
 }
 \examples{
-x <- 1:10
-x_ss <- ss(x)
+# (not run)
+# x <- 1:10
+# x_ss <- ss(x)
 }

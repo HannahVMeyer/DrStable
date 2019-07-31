@@ -9,47 +9,51 @@ subsetDimReduction(Y, seed, size = 0.8, nrSubsets = 10, method,
   parallel = FALSE, is.list.ellipsis = FALSE, ...)
 }
 \arguments{
-\item{Y}{[N x P] data matrix for which the dimensionality of P should be
+\item{Y}{\[N x P\] data matrix for which the dimensionality of P should be
 reduced,}
 
-\item{seed}{[int] seed to initialise random number generator for drawing
+\item{seed}{[integer] seed to initialise random number generator for drawing
 subsets of Y.}
 
-\item{size}{[float] proportion of samples from total number of samples to
+\item{size}{[double] proportion of samples from total number of samples to
 to choose for each subset.}
 
-\item{nrSubsets}{[int] number of subsets to generate and apply dimensionality
+\item{nrSubsets}{[integer] number of subsets to generate and apply dimensionality
 reduction to.}
 
-\item{method}{dimensionality reduction method [string] to be applied; one of
+\item{method}{dimensionality reduction method [character] to be applied; one of
 DiffusionMap, DRR, ICA, LLE, Isomap, LaplacianEigenmap, MDS, PCA, kPCA,
 nMDS, tSNE and PEER.}
 
-\item{optN}{optimal number [int] of neighbours to consider for dimensionality
+\item{optN}{optimal number [integer] of neighbours to consider for dimensionality
 reduction; relevant for methods LLE, LaplacianEigenmaps, Isomap and tSNE. If
-not provided, will be estimated via \code{\link{lle::calc_k}}.}
+not provided, will be estimated via \code{\link[lle]{calc_k}}.}
 
 \item{ndim}{maximum dimensionality [int] to retain in the data; large values
 can cause long computation times; if not provided max(P,N) is chosen.}
 
 \item{kmin}{if optN is not provided, kmin [int] specifies the minimum number
-of neighbours supplied to  \code{\link{lle::calc_k}}.}
+of neighbours supplied to  \code{\link[lle]{calc_k}}.}
 
 \item{kmax}{if optN is not provided, kmax [int] specifies the maximum number
-of neighbours supplied to  \code{\link{lle::calc_k}}.}
+of neighbours supplied to  \code{\link[lle]{calc_k}}.}
 
 \item{verbose}{[logical] If set, progress messages are printed to standard
 out.}
 
 \item{parallel}{if optN is not provided and parallel TRUE, parallel
-computation on multiple cpu cores is used with \code{\link{lle::calc_k}}.}
+computation on multiple cpu cores is used with \code{\link[lle]{calc_k}}.}
 
 \item{is.list.ellipsis}{[logical] if ... arguments are provided as list, set
 TRUE.}
+
+\item{...}{Additional arguments passed to dimensionality reduction methods.
+For possible arguments, check function decomentation. See details for 
+relevant packages and functions.}
 }
 \value{
 list of size nrSubsets, containing at each entry a named list of
-results from \link{\code{computeDimReduction}}:
+results from \code{\link{computeDimReduction}}:
 Y_red:  named list with dimensionality reduced phenotypes (reducedY) and
 object returned by specified dimensionality reduction method (results) with
 additional output
@@ -58,4 +62,23 @@ dimensionality reduction
 }
 \description{
 Compute dimensionality reduction for subsets of the input data
+}
+\details{
+subsetDimReduction wraps around the following implementations of
+the dimensionality reduction methods it provides:
+* Diffusion Map: \code{\link[diffusionMap]{diffuse}}
+* Dimensionality reduction by regression (DRR): \code{\link[DRR]{drr}}
+* Independent component analysis (ICA): \code{\link[fastICA]{fastICA}}
+* Local liner embedding (LLE): \code{\link[lle]{lle}}
+* Isomap: \code{\link[vegan]{isomap}}
+* Laplacian Eigenmap: \code{\link[loe]{spec.emb}} and 
+  \code{\link[loe]{make.kNNG}}
+* Multi-dimensional scaling (MDS) : \code{\link[stats]{cmdscale}}
+* Principal component analysis (PCA): \code{\link[stats]{prcomp}}
+* Kernel PCA (kPCA): \code{\link[kernlab]{kpca}}
+* non-metrix MDS (nMDS): \code{\link[vegan]{metaMDS}}
+* t- stochastic neighbourhood embedding (tSNE): \code{\link[Rtsne]{Rtsne}}
+* Uniform manifold approximation and projection (umap):
+   \code{\link[umap]{umap}}
+* PEER: \href{https://github.com/PMBio/peer/wiki/Installation-instructions}{PEER}
 }

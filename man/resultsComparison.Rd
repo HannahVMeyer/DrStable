@@ -4,7 +4,7 @@
 \alias{resultsComparison}
 \title{Apply compareSetup and format results}
 \usage{
-resultsComparison(data_list, verbose = FALSE)
+resultsComparison(data_list, procrustes, verbose = FALSE)
 }
 \arguments{
 \item{data_list}{[list] output of \code{\link{subsetDimReduction}}. Each list
@@ -12,8 +12,12 @@ entry is a matrix with row and column names; row.names are crucial to allow
 for the comparison of the lower dimensional embedding across common sample
 sets.}
 
+\item{procrustes}{[logical] indication whether a procrustes transformation
+to match the lower dimensional representations of common samples between
+subsets should be performed.}
+
 \item{verbose}{[logical] If set, progress messages are printed to standard
-out}
+out.}
 }
 \value{
 named list with the size of the overlapping samples between samples
