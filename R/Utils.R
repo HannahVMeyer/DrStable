@@ -29,9 +29,8 @@ vmessage <- function(userinfo, verbose=TRUE, sep=" ") {
 #' @param data matrix of vector [float] to compute sum of squares for.
 #' @return value [float] of sum of squares.
 #' @examples 
-#' # (not run)
-#' # x <- 1:10
-#' # x_ss <- ss(x)
+#' x <- 1:10
+#' x_ss <- ss(x)
 ss <- function(data) {
     return(sum(data^2))
 }
