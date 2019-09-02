@@ -3,9 +3,8 @@
 .gitignore
 INDEX.*
 README.Rmd
-_pkgdown.yml
+pkgdown
 _config.yml
-.travis.yml
 docs
 .github
 test_vignettes

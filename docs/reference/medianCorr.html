@@ -32,6 +32,8 @@
 
 
 
+  <link href="../extra.css" rel="stylesheet">
+  
 <meta property="og:title" content="Compute median correlation of low-dimensional components across subsamples — medianCorr" />
 
 <meta property="og:description" content="Takes the output of estimateStability and returns the median
@@ -135,7 +137,7 @@ correlation per component for the specified threshold." />
 
     <div class="ref-description">
     
-    <p>Takes the output of <code>estimateStability</code> and returns the median
+    <p>Takes the output of <code><a href='estimateStability.html'>estimateStability</a></code> and returns the median
 correlation per component for the specified threshold.</p>
     
     </div>
@@ -147,7 +149,7 @@ correlation per component for the specified threshold.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>es</th>
-      <td><p>output [list] of <code>estimateStability</code> with named entries
+      <td><p>output [list] of <code><a href='estimateStability.html'>estimateStability</a></code> with named entries
 [1] stability: list with one dataframe per threshold,
 where each dataframe contains the stability estimate of the low-dimensional
 components for that threshold value, [2] corr: data.frame with correlation of

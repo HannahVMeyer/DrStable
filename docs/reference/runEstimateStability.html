@@ -32,6 +32,8 @@
 
 
 
+  <link href="../extra.css" rel="stylesheet">
+  
 <meta property="og:title" content="Command line execution for Stability — runEstimateStability" />
 
 <meta property="og:description" content="runEstimateStability runs without arguments. Upon call, it reads command-line
@@ -145,11 +147,11 @@ pairwise comparisons and components." />
     <div class="ref-description">
     
     <p>runEstimateStability runs without arguments. Upon call, it reads command-line
-parameters and supplies these to <code>estimateStability</code>.
+parameters and supplies these to <code><a href='estimateStability.html'>estimateStability</a></code>.
 It reads the dimensionality reduction results from the cross-validation (
 Rscript -e "Stability::runDimReduction()") and analyses the stability of
-the low-dimensional embedding via <code>estimateStability</code>. For
-details on <code>estimateStability</code> please refer to the help pages.
+the low-dimensional embedding via <code><a href='estimateStability.html'>estimateStability</a></code>. For
+details on <code><a href='estimateStability.html'>estimateStability</a></code> please refer to the help pages.
 The results of the analysis are written to 1) [output]/[method]_stability.csv
 which contains the stability estimate of the low-dimensional components for
 the specified [threshold] value and to 2) [output]/[method]_correlationCV.csv
