@@ -1,6 +1,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 .gitignore
+.travis.yml
 INDEX.*
 README.Rmd
 pkgdown
