@@ -12,7 +12,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-[![Build Status](https://travis-ci.org/HannahVMeyer/drStable.svg?branch=master)](https://travis-ci.org/HannahVMeyer/drStable)
+[![Build Status](https://travis-ci.org/meyer-lab-cshl/drStable.svg?branch=master)](https://travis-ci.org/meyer-lab-cshl/drStable)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 
@@ -43,11 +43,11 @@ reliable association results.
 Currently, **drStable** is available in alpha-version via:
 ```{r github install, eval=FALSE}
 library(devtools)
-install_github("HannahVMeyer/drStable")
+install_github("meyer-lab-cshl/drStable")
 ```
 
 We are working on the release of a stable version of the package, including
 improving test coverage, extension of the documentation and use-case vignettes.
 
 A log of version changes can be found
-[here](https://github.com/HannahVMeyer/drStable/blob/master/NEWS.md).
+[here](https://github.com/meyer-lab-cshl/drStable/blob/master/NEWS.md).

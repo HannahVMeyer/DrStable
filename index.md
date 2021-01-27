@@ -1,5 +1,5 @@
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
+<!-- INDEX.md is generated from INDEX.Rmd. Please edit that file -->
 
 [![Build
 Status](https://travis-ci.org/meyer-lab-cshl/drStable.svg?branch=master)](https://travis-ci.org/meyer-lab-cshl/drStable)
@@ -13,17 +13,14 @@ meaningful variables from the data or compress the data into a more
 tractable number of features. Feature extraction can be achieved by
 using dimensionality methods.
 
-**drStable** provides an interface for easy access to 13 different
+**drStable** provides an interface for easy access to 12 different
 dimensionality reduction methods: DiffusionMap, DRR, ICA, LLE, Isomap,
-LaplacianEigenmap, MDS, PCA, kPCA, nMDS, tSNE, UMAP and PEER.
+LaplacianEigenmap, MDS, PCA, kPCA, nMDS, tSNE and UMAP.
 
 **drStable** introduces a novel stability criterion which provides the
 user with a tool of estimating the number of low-dimensional features
 that can be reliably recovered and thus determine the stable dimensions
 of the low-dimensional space.
-
-Full documentation is available at
-<http://meyer-lab-cshl.github.io/drStable/>.
 
 **drStable** will be useful in any application that requires the
 selection of a low-dimensional feature representation of the original
